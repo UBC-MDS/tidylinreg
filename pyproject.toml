@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "tidylinreg"
+version = "0.0.1"
+description = "A linear regression package with statistical testing for each estimator."
+authors = ["Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+
+[tool.semantic_release]
+version_toml = [
+    "pyproject.toml:tool.poetry.version",
+]                                                    # version location
+branch = "main"                                      # branch to make releases of
+changelog_file = "CHANGELOG.md"                      # changelog file
+build_command = "pip install poetry && poetry build" # build dists 
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
