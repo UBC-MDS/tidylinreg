@@ -21,7 +21,7 @@ class LinearModel:
         self.y = None
   
           
-    def fit(self,y,X):
+    def fit(self,X,y):
         '''
         Fits the linear model to the provided data.
 
