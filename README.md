@@ -41,3 +41,10 @@ Interested in contributing? Check out the contributing guidelines. Please note t
 ## Credits
 
 `tidylinreg` was created with [`cookiecutter`](https://cookiecutter.readthedocs.io/en/latest/) and the `py-pkgs-cookiecutter` [template](https://github.com/py-pkgs/py-pkgs-cookiecutter).
+
+## References
+
+- R `lm()` - https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/lm
+- R `summary.lm()` - https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/summary.lm
+- sklearn Linear Models - https://scikit-learn.org/1.5/modules/linear_model.html
+- sklearn Ridge - https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.Ridge.html
