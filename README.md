@@ -10,8 +10,6 @@ $ pip install tidylinreg
 
 ## Description
 
-a summary paragraph that describes the project at a high level
-
 The `tidylinreg` package fits a linear model to a dataset, and can be used to carry out regression. `tidylinreg` computes and returns a list of summary statistics of the fitted linear model, including standard error, confidence intervals, and p-values.
 
 ## Functions
