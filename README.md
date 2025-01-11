@@ -2,25 +2,27 @@
 
 A linear regression package with statistical testing for each estimator.
 
+## Contributors
+
+Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan
+
 ## Installation
 
 ```bash
 $ pip install tidylinreg
 ```
 
-## Description
+## Summary
 
 The `tidylinreg` package fits a linear model to a dataset, and can be used to carry out regression. `tidylinreg` computes and returns a list of summary statistics of the fitted linear model, including standard error, confidence intervals, and p-values.
 
 ## Functions
 
-| function | description |
-| -------- | ----------- |
-| `fit` | Fits the linear model to the provided data. |
-| `predict` | Predicts the response variable using the given data. |
-| `get_error_metrics` | Get error metrics for parameter estimates. The standard error and confidence intervals (optional) are computed and returned. |
-| `get_p_values` | Compute the significance p-value for each parameter estimate. |
-| `summary` | Provides a summary of the model fit, similar to the output of the R [`summary()`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/summary.lm) function when computed on a fitted `lm` object. |
+- `fit`: Fits the linear model to the provided data.
+- `predict`: Predicts the response variable using the given data.
+- `get_error_metrics`: Get error metrics for parameter estimates. The standard error and confidence intervals (optional) are computed and returned.
+- `get_p_values`: Compute the significance p-value for each parameter estimate.
+- `summary`: Provides a summary of the model fit, similar to the output of the R [`summary()`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/summary.lm) function when computed on a fitted `lm` object.
 
 ## Python Ecosystem
 
