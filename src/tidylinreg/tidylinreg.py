@@ -141,7 +141,7 @@ class LinearModel:
         Returns
         -------
         pd.Dataframe:
-            The significance p-values for each parameter in the model
+            The significance p-values for each parameter in the model.
         
         Examples
         --------
@@ -166,7 +166,7 @@ class LinearModel:
         If model has been fitted, a dataframe containing parameter estimates, standard errors, significance
         p-values, and (optional) standard error is returned. As is the case with other 
         methofs, These statistics are computed using bootstrapping if 'method' attribute is set to 'bootstrap'
-        during initialization. Note that model must be fitted before summary
+        during initialization. Note that model must be fitted before summary.
         
         Parameters
         ----------
