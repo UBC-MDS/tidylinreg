@@ -27,10 +27,10 @@ class LinearModel:
 
         Parameters
         ----------
-        y : pd.Series
-            The observed response vector. Expecting shape (n_samples,).
         X : pd.DataFrame
             A matrix of named explanatory variables. Expecting shape (n_samples, n_features).
+        y : pd.Series
+            The observed response vector. Expecting shape (n_samples,).
 
         Returns
         -------
