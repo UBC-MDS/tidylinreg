@@ -88,42 +88,64 @@ class LinearModel:
         '''
         return
     
-    def get_error_metrics(self, ci: bool = False, alpha = 0.05):
+    def get_std_error(self, X):
         '''
-        Get error metrics for parameter estimates.
-        
-        The standard error and confidence intervals (optional) are computed and returned.
-        Note that model must be fitted first. Confidence Intervals will be bootstrapped if 'method' attribute
-        is set to 'bootstrap' in initialization.
-        
+        Get the standard error for parameter estimates.
+
+        The standard error for the coefficients in the fitted model are computed and returned.
+        Note that model must be fitted first.
+
         Parameters
         ----------
-        ci: bool, optional
-            if True, (1 - alpha)% confidence interval is computed and returned.
+        X : array-like of shape (n_samples, n_features)
+            The input features for calculation of standard error.        
+
+        Returns
+        -------
+        array-like of shape (n_samples,)
+            The calculated standard error values.
+        '''
+        return
+    
+    def get_test_statistic(self, X):
+        '''
+        Get the t-test statistic of parameter estimates to be used 
+        in hypothesis testing for statistical significance.
+
+        The t-test statistic for the coefficients in the fitted model are computed and returned.
+        Note that model must be fitted first.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            The input features for calculation of the t-test statistic(s).        
+
+        Returns
+        -------
+        array-like of shape (n_samples,)
+            The calculated t-test statistic values.
+        '''
+        return
+    
+    def get_ci(self, type="two-tailed", alpha=0.05):
+        '''
+        Get the confidence interval obtained from a lower- or upper-tailed or two-tailed
+        hypothesis test for the statistical significance of the coefficients in the model.
+
+        The confidence interval(s) for the coefficients in the fitted model are computed and returned.
+        Note that model must be fitted first.
+
+        Parameters
+        ----------
+        alpha : array-like of shape (n_samples, n_features)
+            The input features for calculation of the t-test statistic(s).        
+
+        Returns
+        -------
         alpha: float, optional
             The significance level used to compute confidence intervals. By default, 0.05 (ie. a 95% C.I).
             If ci=False, does nothing.
-            
-        Returns
-        -------
-        pd.DataFrame:  
-            A dataframe containing error metrics for each parameter.
-            
-        Examples
-        --------
-        >>> data = pd.DataFrame({
-        ...     "Feature1": [1, 2, 3],
-        ...     "Feature2": [4, 5, 6],
-        ...     "Target": [7, 8, 9]
-        ... })
-        >>> X = data[["Feature1", "Feature2"]]
-        >>> y = data["Target"]
-        >>> model = LinearModel()
-        >>> model.fit(y, X)
-        ...
-        ... # compute a 90% (alpha = 0.10) confidence interval:
-        >>> model.get_error_metrics(ci = True, alpha = 0.10)
-        ''' 
+        '''
         return
     
     def get_pvalues(self):
