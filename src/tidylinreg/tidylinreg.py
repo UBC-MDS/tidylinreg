@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 from numpy.linalg import inv, LinAlgError
+from scipy import stats
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
@@ -212,6 +213,7 @@ class LinearModel:
         observations minus the number of predictors.
 
         Model should be fitted before p-values can be calculated.
+
         Parameters
         ----------
         self.X_ones (array-like): The observations X with an appended column of ones.
