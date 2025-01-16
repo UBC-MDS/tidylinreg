@@ -2,9 +2,12 @@ from tidylinreg.tidylinreg import LinearModel
 import pandas as pd
 import numpy as np
 from scipy.stats import norm
+import pytest
 
+# DO NOT CHANGE SEED: some tests will fail
 SEED = 524
-# creating test data 
+
+# creating test data
 
 ## Simple Linear Regression ##
 X_slr = pd.DataFrame({'x':[-2,-1,0,1,2]})
@@ -35,24 +38,24 @@ y_mlr_perfect = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6
 # a linear function where one slope is zero: y = 3x1 + 4x2 + 0x3 + 6
 y_one_zero_slope = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 6
 
-# a linear function y = 3x1 + 4x2 + 5x3 + 6 with with normally distributed errors
-y_mlr_noisy = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=3,random_state=SEED)
+# a constant y = 6
+y_mlr_const = pd.Series(6*np.ones(4))
 
-# a linear function where one parameter is zero: y = 3x1 + 0x2 + 5x3 + 6, with noise
-y_mlr_zero_slope_noise = 3*X_mlr['x1']+ 5*X_mlr['x3'] + 6 + norm.rvs(size=3,random_state=SEED)
+# a linear function y = 3x1 + 4x2 + 5x3 + 6, with noise
+y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=4,random_state=SEED)
+
+
+## Edge Cases and Adversarial Usage ##
 
 # a design matrix with categorical variables
-X_mlr = pd.DataFrame({
+X_mlr_categorical = pd.DataFrame({
     'x1':[0,8,3,5],
     'x2':[2,7,1,8],
     'x3':[8,1,3,5],
     'x4':['blue','red','red','blue']
 })
 
-
-## Edge Cases and Adversarial Usage ##
-
-# categorical response:
+# a categorical response:
 y_categorical = pd.Series(['red','blue','blue','yellow','blue'])
 
 # a singular design matrix (should throw LinAlgError when OLS estimate calculated)
@@ -94,9 +97,50 @@ X_mlr_one_sample = pd.DataFrame({
 })
 
 
+# initalize a linear model
+@pytest.fixture
+def linear_model():
+    return LinearModel()
 
+# test fitting on linear regression gives expected parameter estimates
+@pytest.mark.parametrize(
+    'X,y,expected_params',
+    list(zip([X_slr for _ in range(4)] + [X_mlr for _ in range(4)],
+    [y_perfect_line,y_no_intercept,y_const,y_noisy_line,
+     y_mlr_perfect,y_one_zero_slope,y_mlr_const,y_mlr_noise],
+    [pd.Series([2,3],index=['(Intercept)','x']),
+     pd.Series([0,-4],index=['(Intercept)','x']),
+     pd.Series([4,0],index=['(Intercept)','x']),
+     pd.Series([2.3878,3],index=['(Intercept)','x']),
+     pd.Series([6,3,4,5],index=['(Intercept)','x1','x2','x3']),
+     pd.Series([6,3,4,0],index=['(Intercept)','x1','x2','x3']),
+     pd.Series([6,0,0,0],index=['(Intercept)','x1','x2','x3']),
+     pd.Series([28.978,-1.172, 6.227, 1.392],index=['(Intercept)','x1','x2','x3'])]))
+)
+def test_fit_params(linear_model,X,y,expected_params):
+    linear_model.fit(X,y)
+    assert np.allclose(linear_model.params,expected_params)
+    assert linear_model.param_names == expected_params.index
 
-
+# test that error is correctly thrown for incorrect use cases of fit
+@pytest.mark.parametrize(
+    'X,y',
+    [(X_mlr_categorical,y_mlr_perfect),     # categorical features in X
+     (X_mlr,y_categorical),                 # categorical y
+     (X_collinear,y_mlr_perfect),           # collinear X
+     (X_has_nan,y_mlr_perfect),             # missing entries in X
+     (X_mlr,y_has_nan),                      # missing entries in y
+     (X_mlr,y_mlr_wrong_size),              # mismatching sizes of X and y
+     (X_mlr_one_sample,y_mlr_perfect),      # X only has one sample
+     (X_slr_one_sample,y_perfect_line),     # X has one sample and one feature
+     (X_mlr,y_one_sample),                  # y only has one sample
+     (X_mlr,y_empty),                       # y has no samples
+     (X_slr_empty,y_perfect_line),          # X has no samples
+     ]
+)
+def test_fit_throw_error(linear_model,X,y):
+    with pytest.raises(ValueError):
+        linear_model.fit(X,y)
 
 model = LinearModel()
 model.params = [2.0]
