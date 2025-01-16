@@ -212,7 +212,6 @@ class LinearModel:
         observations minus the number of predictors.
 
         Model should be fitted before p-values can be calculated.
-
         Parameters
         ----------
         self.X_ones (array-like): The observations X with an appended column of ones.

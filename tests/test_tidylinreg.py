@@ -4,7 +4,10 @@ import numpy as np
 from scipy.stats import norm
 import pytest
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4e68e95 (added environment.yml file)
 # DO NOT CHANGE SEED: some tests will fail
 SEED = 524
 
@@ -94,9 +97,8 @@ X_slr_empty = pd.DataFrame({'x':[]})
 X_mlr_one_sample = pd.DataFrame({
     'x1':[],
     'x2':[],
-    'x3':[],
+    'x3':[]
 })
-
 
 # initalize a linear model
 @pytest.fixture
