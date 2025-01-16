@@ -1,25 +1,20 @@
 import pandas as pd
 import numpy as np
 from scipy import stats
-
-
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
     function and able to perform bootstrapped estimations.
     '''   
     
-    def __init__(self, method: str = 'parametric'):
+    def __init__(self):
         '''
         Initialize LinearModel class.
         
         Parameters
         ----------
-        method : str, optional
-            One of ('parametric','bootstrap'). If 'bootstrapped', parameter estimates, standard errors, etc. will be computed using bootstrapping
-            from the fitted data. if 'parametric', classical parametric estimates are computed.
+        None
         '''
-        self.__method = method
         self.params = None
         self.param_names = None
         self.X = None
