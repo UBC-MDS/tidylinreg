@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy import stats
+from numpy.linalg import inv, LinAlgError
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
@@ -19,6 +20,9 @@ class LinearModel:
         self.param_names = None
         self.X = None
         self.y = None
+        self.in_sample_predictions = None
+        self.n_samples = None
+        self.n_features = None
   
           
     def fit(self,X,y):
@@ -48,8 +52,45 @@ class LinearModel:
         >>> model = LinearModel()
         >>> model.fit(y, X)
         '''
-        return
-    
+        # check number of samples
+        if len(y) < 2 or len(X) < 2:
+            raise ValueError('less than 2 samples in X or y')
+        
+        # check types of all entries are numeric only
+        if (X.dtypes == object).any() or (y.dtype == object):
+            raise TypeError('Non-numeric entries in X or y')
+        
+        # check for missing entries
+        if X.isna().any().any() or y.isna().any():
+            raise ValueError('Missing entries in X or y')
+        
+        # check shape of X and y matches
+        if len(y.shape) != 1 or len(X) != y.size:
+            raise ValueError('incorrect or mismatching sizes between X and y')
+        
+        # get number of samples and number of features
+        self.n_samples, self.n_features = X.shape
+        
+        # add ones to X for intercept, and estimate parameters
+        # also check for collinear X
+        try:
+            self.X = np.hstack([np.ones([self.n_samples,1]),X])
+            self.y = y
+            params = inv(self.X.T @ self.X) @ self.X.T @ self.y
+        except LinAlgError:
+            raise ValueError('Collinear columns in X')
+        
+        # get parameter estimates
+        self.params = pd.Series(params)
+        
+        # get parameter names
+        self.param_names = ['(Intercept)'] + X.columns.to_list()
+        self.params.index = self.param_names
+        
+        # get in-sample predictions
+        self.in_sample_predictions = self.predict(X)
+        
+
     def predict(self,X):
         '''
         Predicts the response variable using the given data. 
@@ -86,7 +127,10 @@ class LinearModel:
         ... })
         >>> y_pred = model.predict(test_data)
         '''
-        return
+        if type(self.params) == type(None): raise ValueError('model has not been fitted')
+        
+        X_ones = np.hstack([np.ones([self.n_samples,1]),X])
+        return X_ones @ self.params
     
     def get_std_error(self, X):
         '''
