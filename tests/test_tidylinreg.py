@@ -173,28 +173,27 @@ def test_predict_throw_error():
         linear_model.predict(X_slr)
 
 
-
 @pytest.mark.parametrize(
     'params, sd, expected_t',
     [
         (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
          [0.5, 0.5],
-         pd.Series([4.0, 6.0], index=['(Intercept)', 'x'])),    # test basic functionality
+         pd.Series([4.0, 6.0])),    # test basic functionality
         (pd.Series([10.0, 3.0], index=['(Intercept)', 'x']),
          [1.0e-12, 1.0e-12],
-         pd.Series([1.0e13, 3.0e12], index=['(Intercept)', 'x'])),    # test perfect fit (small se)
+         pd.Series([1.0e13, 3.0e12])),    # test perfect fit (small se)
         (pd.Series([0.0, 0.0], index=['(Intercept)', 'x']),
          [1.0, 1.0],
-         pd.Series([0.0, 0.0], index=['(Intercept)', 'x'])),    # test zero coefficient
+         pd.Series([0.0, 0.0])),    # test zero coefficient
         (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
          [0.0, 0.0],
-         pd.Series([np.inf, np.inf], index=['(Intercept)', 'x'])),    # test zero se
+         pd.Series([np.inf, np.inf])),    # test zero se
         (pd.Series([2.0e10, 3.0e10], index=['(Intercept)', 'x']),
          [4.0e5, 2.0e5],
-         pd.Series([50000.0, 150000.0], index=['(Intercept)', 'x'])),    # test very large value
+         pd.Series([50000.0, 150000.0])),    # test very large value
         (pd.Series([2.0e-10, 3.0e-10], index=['(Intercept)', 'x']),
          [4.0e-5, 2.0e-5],
-         pd.Series([0.000005, 0.000015], index=['(Intercept)', 'x'])),    # test very small value
+         pd.Series([0.000005, 0.000015])),    # test very small value
     ]
 )
 def test_get_test_statistic(params, sd, expected_t):
@@ -202,7 +201,6 @@ def test_get_test_statistic(params, sd, expected_t):
     model.params = params
     model.std_error = sd
     assert np.allclose(model.get_test_statistic(), expected_t, atol=0.001)
-
 
 
 @pytest.mark.parametrize(
@@ -227,40 +225,51 @@ def test_get_test_statistic_error(params, sd, expected_error):
         model.get_test_statistic()
 
 
-
-@pytest
-def test_get_pvalues():
-#     # Error: invalid with less than 8 observations
-#     # Warning: p-value may be inaccurate with fewer than x (=20) observations; only X observations given
-    
-#     ## SLR
-#     #   test perfect line with no error: y = 3x + 2
-#     #   - p-val should be 0 for all estimates
-#     #   test perfect line with no intercept: y = -4x
-#     #   - p-val should be 0 for all estimates
-#     #   test perfect line with zero slope (a constant) y = 4
-#     #   - TODO: find expected behaviour
-#     #   test a line y = 3x + 2 with normally distributed errors
-#     #   - TODO: find expected behaviour
-
-#     ## Edge cases and adverserial usage
-#     ## ** Probably don't need to include since these will all be
-#     #       covered by fit and predict, which is required for p-vals **
-#     #   test categorical response
-#     #   - throws TypeError
-#     #   test response that doesn't match shape of X_mlr
-#     #   - throws Error (TBD)
-#     #   test x with a missing entry
-#     #   - throws ValueError
-#     #   test response with a missing entry
-#     #   - produces Warning but not error
-#     #   test response and explanatory variables with only one sample
-#     #   - throws ValueError
-#     #   test response and explanatory variable with no samples
-#     #   - throws ValueError
-#     pass
+@pytest.mark.parametrize(
+    'test_statistic, n_samples, expected_p',
+    [
+        (pd.Series([2.0, 3.0]),
+         20,
+         [np.float64(0.060821465669332664), np.float64(0.007685412140314263)]),   # test basic functionality
+        (pd.Series([100.0, 100.0]),
+         1000,
+         [np.float64(0.0), np.float64(0.0)]),   # test large t-statistic
+        (pd.Series([-2.0, -3.0]),
+         20,
+         [np.float64(0.060821465669332664), np.float64(0.007685412140314263)]),   # test negative t-statistic
+        (pd.Series([2.0, 3.0]),
+         3,
+         [np.float64(0.2951672353008665), np.float64(0.20483276469913347)]),   # test small degrees of freedom
+        (pd.Series([2.0, 3.0]),
+         1000000,
+         [np.float64(0.04550053385185904), np.float64(0.002699862541554632)]),   # test large degrees of freedom
+    ]
+)
+def test_get_pvalues(test_statistic, n_samples, expected_p):
+    model = LinearModel()
+    model.test_statistic = test_statistic
+    model.n_samples = n_samples
+    model.n_features = len(model.test_statistic)
+    assert np.allclose(model.get_pvalues(), expected_p, atol=0.001)
 
 
-
-# def test_get_pvalues_error():
-#     pass
+@pytest.mark.parametrize(
+    'test_statistic, n_samples, n_features, expected_error',
+    [
+        (pd.Series([2.0, 3.0]),
+         2,
+         2,
+         ValueError),   # test invalid degrees of freedom
+        (None,
+         20,
+         2,
+         TypeError),   # test invalid test statistic
+    ]
+)
+def test_get_pvalues_error(test_statistic, n_samples, n_features, expected_error):
+    model = LinearModel()
+    model.test_statistic = test_statistic
+    model.n_samples = n_samples
+    model.n_features = n_features
+    with pytest.raises(expected_error):
+        model.get_pvalues()
