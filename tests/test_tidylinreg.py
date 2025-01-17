@@ -1,4 +1,4 @@
-from tidylinreg import tidylinreg
+from tidylinreg.tidylinreg import LinearModel
 import pandas as pd
 import numpy as np
 from scipy.stats import norm
@@ -92,3 +92,62 @@ X_mlr_one_sample = pd.DataFrame({
     'x2':[],
     'x3':[]
 })
+
+
+
+
+
+
+model = LinearModel()
+model.params = [2.0]
+model.std_error = [0.5]
+def test_get_test_statistic(model):
+    # test basic functionality
+    expected = model.params / model.std_error
+    assert model.get_test_statistic() == pytest.approx(expected_t_stat, rel=1e-6)
+
+    # test perfect fit
+    pass
+
+
+
+def test_get_test_statistic_error():
+    pass
+
+
+
+def test_get_pvalues():
+    # Error: invalid with less than 8 observations
+    # Warning: p-value may be inaccurate with fewer than x (=20) observations; only X observations given
+    
+    ## SLR
+    #   test perfect line with no error: y = 3x + 2
+    #   - p-val should be 0 for all estimates
+    #   test perfect line with no intercept: y = -4x
+    #   - p-val should be 0 for all estimates
+    #   test perfect line with zero slope (a constant) y = 4
+    #   - TODO: find expected behaviour
+    #   test a line y = 3x + 2 with normally distributed errors
+    #   - TODO: find expected behaviour
+
+    ## Edge cases and adverserial usage
+    ## ** Probably don't need to include since these will all be
+    #       covered by fit and predict, which is required for p-vals **
+    #   test categorical response
+    #   - throws TypeError
+    #   test response that doesn't match shape of X_mlr
+    #   - throws Error (TBD)
+    #   test x with a missing entry
+    #   - throws ValueError
+    #   test response with a missing entry
+    #   - produces Warning but not error
+    #   test response and explanatory variables with only one sample
+    #   - throws ValueError
+    #   test response and explanatory variable with no samples
+    #   - throws ValueError
+    pass
+
+
+
+def test_get_pvalues_error():
+    pass
