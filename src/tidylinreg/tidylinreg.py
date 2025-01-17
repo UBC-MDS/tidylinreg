@@ -102,6 +102,9 @@ class LinearModel:
         '''
         import numpy as np
 
+        if self.params == None:
+            raise ValueError("The model must be fitted before standard error values can be computed.")
+
         x = self.X
         y_true = self.y
         y_pred = self.predict(x)
@@ -111,9 +114,9 @@ class LinearModel:
         x_bar = np.mean(x, axis=0)
         sum_sq_deviation_x = np.sum((x - x_bar) ** 2, axis=0)
 
-        std_error = np.sqrt(mean_sq_error / sum_sq_deviation_x)
+        self.std_error = np.sqrt(mean_sq_error / sum_sq_deviation_x)
 
-        return std_error
+        return
     
     def get_test_statistic(self, X):
         '''
@@ -155,6 +158,23 @@ class LinearModel:
         '''
         import numpy as np
         from scipy.stats import t
+        from numbers import Number
+
+        if self.params == None:
+            raise ValueError("The model must be fitted before standard error values can be computed.")
+        
+        if not isinstance(type, str):
+            raise TypeError("`type` argument must be a string containing one of the following:\n [\"lower\", \"upper\", \"two-tailed\"]")
+
+        valid_type = ["lower", "upper", "two-tailed"]
+        if type not in valid_type:
+            raise ValueError("`type` argument must be a string containing one of the following:\n [\"lower\", \"upper\", \"two-tailed\"]")
+        
+        if not isinstance(alpha, Number):
+            raise TypeError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
+        
+        if not ((alpha > 0) and (alpha < 1)):
+            raise ValueError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
 
         x = self.X
         test_statistic = self.get_test_statistic(x)
@@ -166,16 +186,16 @@ class LinearModel:
 
         match type:
             case "two-tailed":
-                lower_ci = test_statistic - (std_error * t_critical)
-                upper_ci = test_statistic + (std_error * t_critical)
+                self.lower_ci = test_statistic - (std_error * t_critical)
+                self.upper_ci = test_statistic + (std_error * t_critical)
 
             case "lower":
-                lower_ci = test_statistic - (std_error * t_critical)
-                upper_ci = np.inf
+                self.lower_ci = test_statistic - (std_error * t_critical)
+                self.upper_ci = np.inf
 
             case "upper":
-                lower_ci = np.inf
-                upper_ci = test_statistic + (std_error * t_critical)
+                self.lower_ci = -np.inf
+                self.upper_ci = test_statistic + (std_error * t_critical)
 
         return
     
