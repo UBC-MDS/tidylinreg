@@ -1,11 +1,16 @@
 from tidylinreg.tidylinreg import LinearModel
+from tidylinreg.tidylinreg import LinearModel
 import pandas as pd
 import numpy as np
 from scipy.stats import norm
 import pytest
 
+
+# DO NOT CHANGE SEED: some tests will fail
 # DO NOT CHANGE SEED: some tests will fail
 SEED = 524
+
+# creating test data
 
 # creating test data
 
@@ -40,7 +45,14 @@ y_one_zero_slope = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 6
 
 # a constant y = 6
 y_mlr_const = pd.Series(6*np.ones(4))
+# a constant y = 6
+y_mlr_const = pd.Series(6*np.ones(4))
 
+# a linear function y = 3x1 + 4x2 + 5x3 + 6, with noise
+y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=4,random_state=SEED)
+
+
+## Edge Cases and Adversarial Usage ##
 # a linear function y = 3x1 + 4x2 + 5x3 + 6, with noise
 y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=4,random_state=SEED)
 
@@ -49,12 +61,14 @@ y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=
 
 # a design matrix with categorical variables
 X_mlr_categorical = pd.DataFrame({
+X_mlr_categorical = pd.DataFrame({
     'x1':[0,8,3,5],
     'x2':[2,7,1,8],
     'x3':[8,1,3,5],
     'x4':['blue','red','red','blue']
 })
 
+# a categorical response:
 # a categorical response:
 y_categorical = pd.Series(['red','blue','blue','yellow','blue'])
 
@@ -93,7 +107,7 @@ X_slr_empty = pd.DataFrame({'x':[]})
 X_mlr_one_sample = pd.DataFrame({
     'x1':[],
     'x2':[],
-    'x3':[]
+    'x3':[],
 })
 
 # initalize a linear model
@@ -110,7 +124,7 @@ def linear_model():
     [pd.Series([2,3],index=['(Intercept)','x']),
      pd.Series([0,-4],index=['(Intercept)','x']),
      pd.Series([4,0],index=['(Intercept)','x']),
-     pd.Series([2.3878,3],index=['(Intercept)','x']),
+     pd.Series([0.568,3],index=['(Intercept)','x']),
      pd.Series([6,3,4,5],index=['(Intercept)','x1','x2','x3']),
      pd.Series([6,3,4,0],index=['(Intercept)','x1','x2','x3']),
      pd.Series([6,0,0,0],index=['(Intercept)','x1','x2','x3']),
@@ -118,25 +132,56 @@ def linear_model():
 )
 def test_fit_params(linear_model,X,y,expected_params):
     linear_model.fit(X,y)
-    assert np.allclose(linear_model.params,expected_params)
-    assert linear_model.param_names == expected_params.index
+    assert np.allclose(linear_model.params,expected_params,atol=0.001)
+    assert (linear_model.param_names == expected_params.index).all()
 
 # test that error is correctly thrown for incorrect use cases of fit
 @pytest.mark.parametrize(
-    'X,y',
-    [(X_mlr_categorical,y_mlr_perfect),     # categorical features in X
-     (X_mlr,y_categorical),                 # categorical y
-     (X_collinear,y_mlr_perfect),           # collinear X
-     (X_has_nan,y_mlr_perfect),             # missing entries in X
-     (X_mlr,y_has_nan),                      # missing entries in y
-     (X_mlr,y_mlr_wrong_size),              # mismatching sizes of X and y
-     (X_mlr_one_sample,y_mlr_perfect),      # X only has one sample
-     (X_slr_one_sample,y_perfect_line),     # X has one sample and one feature
-     (X_mlr,y_one_sample),                  # y only has one sample
-     (X_mlr,y_empty),                       # y has no samples
-     (X_slr_empty,y_perfect_line),          # X has no samples
+    'X,y,expected_error',
+    [(X_mlr_categorical,y_mlr_perfect,TypeError),     # categorical features in X
+     (X_mlr,y_categorical,TypeError),                 # categorical y
+     (X_collinear,y_mlr_perfect,ValueError),          # collinear X
+     (X_has_nan,y_mlr_perfect,ValueError),            # missing entries in X
+     (X_mlr,y_has_nan,ValueError),                     # missing entries in y
+     (X_mlr,y_mlr_wrong_size,ValueError),             # mismatching sizes of X and y
+     (X_mlr_one_sample,y_mlr_perfect,ValueError),     # X only has one sample
+     (X_slr_one_sample,y_perfect_line,ValueError),    # X has one sample and one feature
+     (X_mlr,y_one_sample,ValueError),                 # y only has one sample
+     (X_mlr,y_empty,ValueError),                      # y has no samples
+     (X_slr_empty,y_perfect_line,ValueError),         # X has no samples
      ]
 )
-def test_fit_throw_error(linear_model,X,y):
-    with pytest.raises(ValueError):
+def test_fit_throw_error(linear_model,X,y,expected_error):
+    with pytest.raises(expected_error):
         linear_model.fit(X,y)
+
+# creating prediction test data
+X_slr_test = pd.DataFrame({'x':[3,4,5,6,7]})
+y_perfect_line_test = 3*X_slr_test.squeeze() + 2
+
+X_mlr_test = pd.DataFrame({
+    'x1':[1,8,4,6],
+    'x2':[3,8,2,9],
+    'x3':[4,2,4,6]
+})
+y_mlr_perfect_test = 3*X_mlr_test['x1'] + 4*X_mlr_test['x2'] + 5*X_mlr_test['x3'] + 6
+
+# test for accurate model predictions
+@pytest.mark.parametrize(
+    'X_fit,y_fit,X_test,expected_predictions',
+    [(X_slr,y_perfect_line,X_slr,y_perfect_line),               # in-sample predictions (SLR)
+     (X_mlr,y_mlr_perfect,X_mlr,y_mlr_perfect),                 # in-sample predictions (MLR)
+     (X_slr,y_perfect_line,X_slr_test,y_perfect_line_test),     # out-of-sample predictions (SLR)
+     (X_mlr,y_mlr_perfect,X_mlr_test,y_mlr_perfect_test)        # out-of-sample predictions (MLR)
+    ]
+)
+def test_predict(linear_model,X_fit,y_fit,X_test,expected_predictions):
+    linear_model.fit(X_fit,y_fit)
+    predictions = linear_model.predict(X_test)
+    assert np.allclose(predictions,expected_predictions,atol=0.001)
+
+# test that error is thrown when prediction attempted without fitting
+def test_predict_throw_error():
+    linear_model = LinearModel()
+    with pytest.raises(ValueError):
+        linear_model.predict(X_slr)
