@@ -4,10 +4,7 @@ import numpy as np
 from scipy.stats import norm
 import pytest
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 4e68e95 (added environment.yml file)
 # DO NOT CHANGE SEED: some tests will fail
 SEED = 524
 
