@@ -237,7 +237,7 @@ class LinearModel:
         >>> model.fit(y, X)
         >>> model.get_pvalues()
         '''
-        self.df = self.n_samples - self.n_features
+        self.df = self.n_samples - (self.n_features - 1)
         if self.df <= 0:
             raise ValueError("Degrees of freedom must be greater than 0.")
         self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistic]

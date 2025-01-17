@@ -230,19 +230,19 @@ def test_get_test_statistic_error(params, sd, expected_error):
     [
         (pd.Series([2.0, 3.0]),
          20,
-         [np.float64(0.060821465669332664), np.float64(0.007685412140314263)]),   # test basic functionality
+         [np.float64(0.06000203638609847), np.float64(0.007361724183868601)]),   # test basic functionality
         (pd.Series([100.0, 100.0]),
          1000,
          [np.float64(0.0), np.float64(0.0)]),   # test large t-statistic
         (pd.Series([-2.0, -3.0]),
          20,
-         [np.float64(0.060821465669332664), np.float64(0.007685412140314263)]),   # test negative t-statistic
+         [np.float64(0.06000203638609847), np.float64(0.007361724183868601)]),   # test negative t-statistic
         (pd.Series([2.0, 3.0]),
-         3,
+         2,
          [np.float64(0.2951672353008665), np.float64(0.20483276469913347)]),   # test small degrees of freedom
         (pd.Series([2.0, 3.0]),
          1000000,
-         [np.float64(0.04550053385185904), np.float64(0.002699862541554632)]),   # test large degrees of freedom
+         [np.float64(0.04550053385158925), np.float64(0.0026998625414882405)]),   # test large degrees of freedom
     ]
 )
 def test_get_pvalues(test_statistic, n_samples, expected_p):
@@ -258,7 +258,7 @@ def test_get_pvalues(test_statistic, n_samples, expected_p):
     [
         (pd.Series([2.0, 3.0]),
          2,
-         2,
+         3,
          ValueError),   # test invalid degrees of freedom
         (None,
          20,
