@@ -88,24 +88,32 @@ class LinearModel:
         '''
         return
     
-    def get_std_error(self, X):
+    def get_std_error(self):
         '''
         Get the standard error for parameter estimates.
 
         The standard error for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            The input features for calculation of standard error.        
+        Note that model must be fitted first.      
 
         Returns
         -------
-        array-like of shape (n_samples,)
+        array-like of shape (n_features,)
             The calculated standard error values.
         '''
-        return
+        import numpy as np
+
+        x = self.X
+        y_true = self.y
+        y_pred = self.predict(x)
+
+        mean_sq_error = np.mean((y_true - y_pred) ** 2)
+
+        x_bar = np.mean(x, axis=0)
+        sum_sq_deviation_x = np.sum((x - x_bar) ** 2, axis=0)
+
+        std_error = np.sqrt(mean_sq_error / sum_sq_deviation_x)
+
+        return std_error
     
     def get_test_statistic(self, X):
         '''
@@ -133,16 +141,15 @@ class LinearModel:
         hypothesis test for the statistical significance of the coefficients in the model.
 
         The confidence interval(s) for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.
+        Note that model must be fitted first.       
 
         Parameters
         ----------
-        alpha : array-like of shape (n_samples, n_features)
-            The input features for calculation of the t-test statistic(s).        
+        type : str
+            The type of hypothesis testing conducted. By default, "two-tailed".
+            Possible types: ["lower", "upper", "two-tailed"]
 
-        Returns
-        -------
-        alpha: float, optional
+        alpha : float, optional
             The significance level used to compute confidence intervals. By default, 0.05 (ie. a 95% C.I).
             If ci=False, does nothing.
         '''
