@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy import stats
 from numpy.linalg import inv, LinAlgError
-
-
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
