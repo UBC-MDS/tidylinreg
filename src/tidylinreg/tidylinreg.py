@@ -8,7 +8,6 @@ class LinearModel:
     '''   
     
     def __init__(self):
-    def __init__(self):
         '''
         Initialize LinearModel class.
         
