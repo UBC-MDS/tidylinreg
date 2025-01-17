@@ -45,7 +45,6 @@ y_mlr_const = pd.Series(6*np.ones(4))
 # a linear function y = 3x1 + 4x2 + 5x3 + 6, with noise
 y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=4,random_state=SEED)
 
-
 ## Edge Cases and Adversarial Usage ##
 
 # a design matrix with categorical variables
