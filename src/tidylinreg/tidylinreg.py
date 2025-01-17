@@ -8,11 +8,13 @@ class LinearModel:
     '''   
     
     def __init__(self):
+    def __init__(self):
         '''
         Initialize LinearModel class.
         
         Parameters
         ----------
+        None
         None
         '''
         self.params = None
@@ -195,6 +197,7 @@ class LinearModel:
         '''
         Compute the significance p-value for each parameter estimate.
         
+        p-values are computed parametrically using the t-test. 
         p-values are computed parametrically using the t-test. 
         
         Parameters
