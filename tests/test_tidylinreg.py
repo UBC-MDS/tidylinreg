@@ -174,56 +174,93 @@ def test_predict_throw_error():
 
 
 
-model = LinearModel()
-model.params = [2.0]
-model.std_error = [0.5]
-def test_get_test_statistic(model):
-    # test basic functionality
-    expected = model.params / model.std_error
-    assert model.get_test_statistic() == pytest.approx(expected_t_stat, rel=1e-6)
+@pytest.mark.parametrize(
+    'params, sd, expected_t',
+    [
+        (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
+         [0.5, 0.5],
+         pd.Series([4.0, 6.0], index=['(Intercept)', 'x'])),    # test basic functionality
+        (pd.Series([10.0, 3.0], index=['(Intercept)', 'x']),
+         [1.0e-12, 1.0e-12],
+         pd.Series([1.0e13, 3.0e12], index=['(Intercept)', 'x'])),    # test perfect fit (small se)
+        (pd.Series([0.0, 0.0], index=['(Intercept)', 'x']),
+         [1.0, 1.0],
+         pd.Series([0.0, 0.0], index=['(Intercept)', 'x'])),    # test zero coefficient
+        (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
+         [0.0, 0.0],
+         pd.Series([np.inf, np.inf], index=['(Intercept)', 'x'])),    # test zero se
+        (pd.Series([2.0e10, 3.0e10], index=['(Intercept)', 'x']),
+         [4.0e5, 2.0e5],
+         pd.Series([50000.0, 150000.0], index=['(Intercept)', 'x'])),    # test very large value
+        (pd.Series([2.0e-10, 3.0e-10], index=['(Intercept)', 'x']),
+         [4.0e-5, 2.0e-5],
+         pd.Series([0.000005, 0.000015], index=['(Intercept)', 'x'])),    # test very small value
+    ]
+)
+def test_get_test_statistic(params, sd, expected_t):
+    model = LinearModel()
+    model.params = params
+    model.std_error = sd
+    assert np.allclose(model.get_test_statistic(), expected_t, atol=0.001)
 
-    # test perfect fit
-    pass
+
+
+@pytest.mark.parametrize(
+    'params, sd, expected_error',
+    [
+        (pd.Series([]),
+         [1.0, 1.0],
+         ValueError),    # test no params
+        (pd.Series([1.0, 1.0], index=['(Intercept)', 'x']),
+         [],
+         ValueError),    # test no se
+        (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
+         [1.0, 1.0, 1.0],
+         ValueError),    # test mismatched dimensions
+    ]
+)
+def test_get_test_statistic_error(params, sd, expected_error):
+    model = LinearModel()
+    model.params = params
+    model.std_error = sd
+    with pytest.raises(expected_error):
+        model.get_test_statistic()
 
 
 
-def test_get_test_statistic_error():
-    pass
-
-
-
+@pytest
 def test_get_pvalues():
-    # Error: invalid with less than 8 observations
-    # Warning: p-value may be inaccurate with fewer than x (=20) observations; only X observations given
+#     # Error: invalid with less than 8 observations
+#     # Warning: p-value may be inaccurate with fewer than x (=20) observations; only X observations given
     
-    ## SLR
-    #   test perfect line with no error: y = 3x + 2
-    #   - p-val should be 0 for all estimates
-    #   test perfect line with no intercept: y = -4x
-    #   - p-val should be 0 for all estimates
-    #   test perfect line with zero slope (a constant) y = 4
-    #   - TODO: find expected behaviour
-    #   test a line y = 3x + 2 with normally distributed errors
-    #   - TODO: find expected behaviour
+#     ## SLR
+#     #   test perfect line with no error: y = 3x + 2
+#     #   - p-val should be 0 for all estimates
+#     #   test perfect line with no intercept: y = -4x
+#     #   - p-val should be 0 for all estimates
+#     #   test perfect line with zero slope (a constant) y = 4
+#     #   - TODO: find expected behaviour
+#     #   test a line y = 3x + 2 with normally distributed errors
+#     #   - TODO: find expected behaviour
 
-    ## Edge cases and adverserial usage
-    ## ** Probably don't need to include since these will all be
-    #       covered by fit and predict, which is required for p-vals **
-    #   test categorical response
-    #   - throws TypeError
-    #   test response that doesn't match shape of X_mlr
-    #   - throws Error (TBD)
-    #   test x with a missing entry
-    #   - throws ValueError
-    #   test response with a missing entry
-    #   - produces Warning but not error
-    #   test response and explanatory variables with only one sample
-    #   - throws ValueError
-    #   test response and explanatory variable with no samples
-    #   - throws ValueError
-    pass
+#     ## Edge cases and adverserial usage
+#     ## ** Probably don't need to include since these will all be
+#     #       covered by fit and predict, which is required for p-vals **
+#     #   test categorical response
+#     #   - throws TypeError
+#     #   test response that doesn't match shape of X_mlr
+#     #   - throws Error (TBD)
+#     #   test x with a missing entry
+#     #   - throws ValueError
+#     #   test response with a missing entry
+#     #   - produces Warning but not error
+#     #   test response and explanatory variables with only one sample
+#     #   - throws ValueError
+#     #   test response and explanatory variable with no samples
+#     #   - throws ValueError
+#     pass
 
 
 
-def test_get_pvalues_error():
-    pass
+# def test_get_pvalues_error():
+#     pass

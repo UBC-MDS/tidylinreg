@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from numpy.linalg import inv, LinAlgError
+from scipy import stats
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
@@ -181,8 +182,8 @@ class LinearModel:
         >>> model.fit(y, X)
         >>> model.get_test_statistic()
         '''
-        self.test_statistics = self.params / self.std_error
-        return self.test_statistics
+        self.test_statistic = self.params / self.std_error
+        return self.test_statistic
 
     def get_ci(self, type="two-tailed", alpha=0.05):
         '''
@@ -215,7 +216,8 @@ class LinearModel:
 
         Parameters
         ----------
-        self.X_ones (array-like): The observations X with an appended column of ones.
+        self.n_samples (int): The number of samples in X.
+        self.n_features (int): The number of features in X.
         self.test_statistics (array-like): The calculated t-test statistic values.
 
         Returns
@@ -235,8 +237,8 @@ class LinearModel:
         >>> model.fit(y, X)
         >>> model.get_pvalues()
         '''
-        self.df = len(self.X_ones) - len(self.X_ones[0])
-        self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistics]
+        self.df = self.n_samples - self.n_features
+        self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistic]
         return self.pvalues
 
     def summary(self, **kwargs) -> pd.DataFrame:
