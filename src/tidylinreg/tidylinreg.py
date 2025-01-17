@@ -153,6 +153,30 @@ class LinearModel:
             The significance level used to compute confidence intervals. By default, 0.05 (ie. a 95% C.I).
             If ci=False, does nothing.
         '''
+        import numpy as np
+        from scipy.stats import t
+
+        x = self.X
+        test_statistic = self.get_test_statistic(x)
+        n, p = x.shape
+        df = n - p
+
+        std_error = self.get_std_error()
+        t_critical = t.ppf(1 - alpha / 2, df)
+
+        match type:
+            case "two-tailed":
+                lower_ci = test_statistic - (std_error * t_critical)
+                upper_ci = test_statistic + (std_error * t_critical)
+
+            case "lower":
+                lower_ci = test_statistic - (std_error * t_critical)
+                upper_ci = np.inf
+
+            case "upper":
+                lower_ci = np.inf
+                upper_ci = test_statistic + (std_error * t_critical)
+
         return
     
     def get_pvalues(self):
