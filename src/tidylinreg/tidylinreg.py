@@ -104,6 +104,12 @@ class LinearModel:
 
         if self.params == None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
+        
+        if self.X == None:
+            raise ValueError("Train data (X) is not found. Has the model been fitted?")
+        
+        if self.y == None:
+            raise ValueError("Train data (y) is not found. Has the model been fitted?")
 
         x = self.X
         y_true = self.y
