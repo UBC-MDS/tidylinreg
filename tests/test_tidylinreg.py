@@ -61,7 +61,6 @@ y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=
 
 # a design matrix with categorical variables
 X_mlr_categorical = pd.DataFrame({
-X_mlr_categorical = pd.DataFrame({
     'x1':[0,8,3,5],
     'x2':[2,7,1,8],
     'x3':[8,1,3,5],
