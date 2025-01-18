@@ -172,6 +172,10 @@ class LinearModel:
         x_bar = np.mean(x, axis=0)
         sum_sq_deviation_x = np.sum((x - x_bar) ** 2, axis=0)
 
+        # Check for zero values in sum_sq_deviation_x
+        if np.any(sum_sq_deviation_x == 0):
+            raise ValueError("One or more features have no variation (sum of squared deviations is zero).")
+
         self.std_error = np.sqrt(mean_sq_error / sum_sq_deviation_x)
 
         return
