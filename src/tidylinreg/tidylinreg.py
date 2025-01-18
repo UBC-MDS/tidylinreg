@@ -1,4 +1,9 @@
 import pandas as pd
+import numpy as np
+from numpy.linalg import inv, LinAlgError
+from scipy import stats
+from scipy.stats import t
+from numbers import Number
 
 class LinearModel:
     '''
@@ -6,22 +11,24 @@ class LinearModel:
     function and able to perform bootstrapped estimations.
     '''   
     
-    def __init__(self, method: str = 'parametric'):
+    def __init__(self):
         '''
         Initialize LinearModel class.
         
         Parameters
         ----------
-        method : str, optional
-            One of ('parametric','bootstrap'). If 'bootstrapped', parameter estimates, standard errors, etc. will be computed using bootstrapping
-            from the fitted data. if 'parametric', classical parametric estimates are computed.
+        None
+        
         '''
-        self.__method = method
         self.params = None
         self.param_names = None
         self.X = None
         self.y = None
         self.in_sample_predictions = None
+
+        self.n_samples = None
+        self.n_features = None
+        
         self.std_error = None
         self.test_statistic = None
         self.ci = None
@@ -54,8 +61,45 @@ class LinearModel:
         >>> model = LinearModel()
         >>> model.fit(y, X)
         '''
-        return
-    
+        # check number of samples
+        if len(y) < 2 or len(X) < 2:
+            raise ValueError('less than 2 samples in X or y')
+        
+        # check types of all entries are numeric only
+        if (X.dtypes == object).any() or (y.dtype == object):
+            raise TypeError('Non-numeric entries in X or y')
+        
+        # check for missing entries
+        if X.isna().any().any() or y.isna().any():
+            raise ValueError('Missing entries in X or y')
+        
+        # check shape of X and y matches
+        if len(y.shape) != 1 or len(X) != y.size:
+            raise ValueError('incorrect or mismatching sizes between X and y')
+        
+        # get number of samples and number of features
+        self.n_samples, self.n_features = X.shape
+        
+        # add ones to X for intercept, and estimate parameters
+        # also check for collinear X
+        try:
+            self.X = np.hstack([np.ones([self.n_samples,1]),X])
+            self.y = y
+            params = inv(self.X.T @ self.X) @ self.X.T @ self.y
+        except LinAlgError:
+            raise ValueError('Collinear columns in X')
+        
+        # get parameter estimates
+        self.params = pd.Series(params)
+        
+        # get parameter names
+        self.param_names = ['(Intercept)'] + X.columns.to_list()
+        self.params.index = self.param_names
+        
+        # get in-sample predictions
+        self.in_sample_predictions = self.predict(X)
+        
+
     def predict(self,X):
         '''
         Predicts the response variable using the given data. 
@@ -92,7 +136,10 @@ class LinearModel:
         ... })
         >>> y_pred = model.predict(test_data)
         '''
-        return
+        if type(self.params) == type(None): raise ValueError('model has not been fitted')
+        
+        X_ones = np.hstack([np.ones([self.n_samples,1]),X])
+        return X_ones @ self.params
     
     def get_std_error(self):
         '''
@@ -106,8 +153,6 @@ class LinearModel:
         array-like of shape (n_features,)
             The calculated standard error values.
         '''
-        import numpy as np
-
         if self.params is None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
         
@@ -129,27 +174,41 @@ class LinearModel:
         self.std_error = np.sqrt(mean_sq_error / sum_sq_deviation_x)
 
         return
-    
-    def get_test_statistic(self, X):
+
+    def get_test_statistic(self):
         '''
-        Get the t-test statistic of parameter estimates to be used 
+        Get the t-test statistic of parameter estimates to be used
         in hypothesis testing for statistical significance.
 
-        The t-test statistic for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.
+        The t-test statistic for the coefficients in the fitted model are
+        computed and returned. Note that model must be fitted first.
 
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
-            The input features for calculation of the t-test statistic(s).        
+        self.params (array-like): The fitted model coefficients.
+        self.std_error (array-like): The calculated standard error values.
 
         Returns
         -------
-        array-like of shape (n_samples,)
-            The calculated t-test statistic values.
+        array-like: The calculated t-test statistic values.
+
+        Examples
+        --------
+        >>> data = pd.DataFrame({
+        ...     "Feature1": [1, 2, 3],
+        ...     "Feature2": [4, 5, 6],
+        ...     "Target": [7, 8, 9]
+        ... })
+        >>> X = data[["Feature1", "Feature2"]]
+        >>> y = data["Target"]
+        >>> model = LinearModel()
+        >>> model.fit(y, X)
+        >>> model.get_test_statistic()
         '''
-        return
-    
+
+        self.test_statistic = (self.params / self.std_error).values
+        return self.test_statistic
+
     def get_ci(self, alpha=0.05):
         '''
         Get the confidence interval obtained from a two-tailed hypothesis test for the statistical significance of the coefficients in the model.
@@ -163,10 +222,6 @@ class LinearModel:
             The significance level used to compute confidence intervals. By default, 0.05 (ie. a 95% C.I).
             If ci=False, does nothing.
         '''
-        import numpy as np
-        from scipy.stats import t
-        from numbers import Number
-
         if self.params is None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
         
@@ -196,24 +251,25 @@ class LinearModel:
         self.ci[:, 1] = betas + margin_of_error
 
         return
-    
+
     def get_pvalues(self):
         '''
-        Compute the significance p-value for each parameter estimate.
-        
-        If method is set to 'parametric', p-values are computed using the t-test. If 'bootstrap', 
-        p-values are computed using empirical bootstrapped sample distribution. Model should
-        be fitted before p-values can be calculated.
-        
+        Compute the significance p-value for each parameter estimate using the
+        t-test. The degrees of freedom (df) are calculated as the number of
+        observations minus the number of predictors.
+
+        Model should be fitted before p-values can be calculated.
+
         Parameters
         ----------
-        None
-        
+        self.n_samples (int): The number of samples in X.
+        self.n_features (int): The number of features in X.
+        self.test_statistics (array-like): The calculated t-test statistic values.
+
         Returns
         -------
-        pd.Dataframe:
-            The significance p-values for each parameter in the model.
-        
+        array-like: The significance p-values for each parameter in the model.
+
         Examples
         --------
         >>> data = pd.DataFrame({
@@ -227,8 +283,12 @@ class LinearModel:
         >>> model.fit(y, X)
         >>> model.get_pvalues()
         '''
-        return
-    
+        self.df = self.n_samples - (self.n_features + 1)
+        if self.df <= 0:
+            raise ValueError("Degrees of freedom must be greater than 0.")
+        self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistic]
+        return self.pvalues
+
     def summary(self, **kwargs) -> pd.DataFrame:
         '''
         Provides a summary of the model fit, similar to the output of the R summary() function when computed on
