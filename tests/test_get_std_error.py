@@ -15,7 +15,8 @@ n = X.shape[0]
 
 np.random.seed(seed)
 error = np.vstack(np.random.normal(mu, sigma, n))
-y_true = X * beta_true + error
+y = X * beta_true
+y_true = y + error
 beta_pred = np.linalg.inv(X.T @ X) @ X.T @ y_true
 y_pred = X * beta_pred
 
@@ -64,3 +65,12 @@ def test_calculate_std_error_zero(test_model):
     expected_std_error = 0
     test_model.get_std_error()
     assert np.allclose(test_model.std_error, expected_std_error, atol=0.001)
+
+def test_features_without_variation(test_model):
+    test_model.params = beta_true
+    test_model.X = np.vstack(np.ones(10))
+    test_model.y = X * beta_true
+    test_model.in_sample_predictions = X * beta_true
+
+    with pytest.raises(ValueError):
+        test_model.get_std_error()
