@@ -18,6 +18,7 @@ jupyter = "^1.1.1"
 myst-nb = {version = "^1.1.2", python = ">=3.13"}
 sphinx-autoapi = "^3.4.0"
 sphinx-rtd-theme = "^3.0.2"
+statsmodels = "^0.14.4"
 
 [tool.semantic_release]
 version_toml = [
