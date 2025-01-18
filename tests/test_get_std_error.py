@@ -24,6 +24,11 @@ def test_model():
     model = LinearModel()
     return model
 
+@pytest.fixture
+def ref_model():
+    model = sm.OLS(y_true, X).fit()
+    return model
+
 def test_is_model_fitted(test_model):
     with pytest.raises(ValueError):
         test_model.get_std_error()
@@ -39,14 +44,13 @@ def test_empty_y(test_model):
     with pytest.raises(ValueError):
         test_model.get_std_error()
 
-def test_calculate_std_error(test_model):
+def test_calculate_std_error(test_model, ref_model):
     test_model.params = beta_pred
     test_model.X = X
     test_model.y = y_true
     test_model.in_sample_predictions = y_pred
     
-    ref_model = sm.OLS(y_true, X)
-    expected_std_error = ref_model.fit().bse
+    expected_std_error = ref_model.bse
     test_model.get_std_error()
 
     assert np.allclose(test_model.std_error, expected_std_error, atol=0.001)
