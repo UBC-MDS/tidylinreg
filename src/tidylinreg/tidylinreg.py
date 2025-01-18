@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from numpy.linalg import inv, LinAlgError
 from scipy import stats
+from scipy.stats import t
+from numbers import Number
+
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
@@ -22,8 +25,13 @@ class LinearModel:
         self.X = None
         self.y = None
         self.in_sample_predictions = None
+
         self.n_samples = None
         self.n_features = None
+        
+        self.std_error = None
+        self.test_statistic = None
+        self.ci = None
   
           
     def fit(self,X,y):
@@ -133,23 +141,38 @@ class LinearModel:
         X_ones = np.hstack([np.ones([self.n_samples,1]),X])
         return X_ones @ self.params
     
-    def get_std_error(self, X):
+    def get_std_error(self):
         '''
         Get the standard error for parameter estimates.
 
         The standard error for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            The input features for calculation of standard error.        
+        Note that model must be fitted first.      
 
         Returns
         -------
-        array-like of shape (n_samples,)
+        array-like of shape (n_features,)
             The calculated standard error values.
         '''
+        if self.params is None:
+            raise ValueError("The model must be fitted before standard error values can be computed.")
+        
+        if self.X is None:
+            raise ValueError("Train data (X) is not found. Has the model been fitted?")
+        
+        if self.y is None:
+            raise ValueError("Train data (y) is not found. Has the model been fitted?")
+
+        x = self.X
+        y_true = self.y
+        y_pred = self.in_sample_predictions
+
+        mean_sq_error = np.mean((y_true - y_pred) ** 2)
+
+        x_bar = np.mean(x, axis=0)
+        sum_sq_deviation_x = np.sum((x - x_bar) ** 2, axis=0)
+
+        self.std_error = np.sqrt(mean_sq_error / sum_sq_deviation_x)
+
         return
 
     def get_test_statistic(self):
@@ -182,28 +205,51 @@ class LinearModel:
         >>> model.fit(y, X)
         >>> model.get_test_statistic()
         '''
+
         self.test_statistic = (self.params / self.std_error).values
         return self.test_statistic
 
-    def get_ci(self, type="two-tailed", alpha=0.05):
+    def get_ci(self, alpha=0.05):
         '''
-        Get the confidence interval obtained from a lower- or upper-tailed or two-tailed
-        hypothesis test for the statistical significance of the coefficients in the model.
+        Get the confidence interval obtained from a two-tailed hypothesis test for the statistical significance of the coefficients in the model.
 
         The confidence interval(s) for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.
+        Note that model must be fitted first.       
 
         Parameters
         ----------
-        alpha : array-like of shape (n_samples, n_features)
-            The input features for calculation of the t-test statistic(s).        
-
-        Returns
-        -------
-        alpha: float, optional
+        alpha : float, optional
             The significance level used to compute confidence intervals. By default, 0.05 (ie. a 95% C.I).
             If ci=False, does nothing.
         '''
+        if self.params is None:
+            raise ValueError("The model must be fitted before standard error values can be computed.")
+        
+        if self.X is None:
+            raise ValueError("Train data (X) is not found. Has the model been fitted?")
+        
+        if self.y is None:
+            raise ValueError("Train data (y) is not found. Has the model been fitted?")        
+        
+        if not isinstance(alpha, Number):
+            raise TypeError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
+        
+        if not ((alpha > 0) and (alpha < 1)):
+            raise ValueError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
+
+        x = self.X
+        betas = self.params
+        n, p = x.shape
+        df = n - p
+
+        std_error = self.std_error
+        t_critical = t.ppf(1 - alpha / 2, df)
+        margin_of_error = std_error * t_critical
+
+        self.ci = np.zeros((p, 2))
+        self.ci[:, 0] = betas - margin_of_error
+        self.ci[:, 1] = betas + margin_of_error
+
         return
 
     def get_pvalues(self):
