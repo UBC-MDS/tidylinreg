@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from numpy.linalg import inv, LinAlgError
+from scipy import stats
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
@@ -14,7 +15,7 @@ class LinearModel:
         Parameters
         ----------
         None
-        None
+        
         '''
         self.params = None
         self.param_names = None
@@ -150,27 +151,40 @@ class LinearModel:
             The calculated standard error values.
         '''
         return
-    
-    def get_test_statistic(self, X):
+
+    def get_test_statistic(self):
         '''
-        Get the t-test statistic of parameter estimates to be used 
+        Get the t-test statistic of parameter estimates to be used
         in hypothesis testing for statistical significance.
 
-        The t-test statistic for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.
+        The t-test statistic for the coefficients in the fitted model are
+        computed and returned. Note that model must be fitted first.
 
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
-            The input features for calculation of the t-test statistic(s).        
+        self.params (array-like): The fitted model coefficients.
+        self.std_error (array-like): The calculated standard error values.
 
         Returns
         -------
-        array-like of shape (n_samples,)
-            The calculated t-test statistic values.
+        array-like: The calculated t-test statistic values.
+
+        Examples
+        --------
+        >>> data = pd.DataFrame({
+        ...     "Feature1": [1, 2, 3],
+        ...     "Feature2": [4, 5, 6],
+        ...     "Target": [7, 8, 9]
+        ... })
+        >>> X = data[["Feature1", "Feature2"]]
+        >>> y = data["Target"]
+        >>> model = LinearModel()
+        >>> model.fit(y, X)
+        >>> model.get_test_statistic()
         '''
-        return
-    
+        self.test_statistic = (self.params / self.std_error).values
+        return self.test_statistic
+
     def get_ci(self, type="two-tailed", alpha=0.05):
         '''
         Get the confidence interval obtained from a lower- or upper-tailed or two-tailed
@@ -191,23 +205,25 @@ class LinearModel:
             If ci=False, does nothing.
         '''
         return
-    
+
     def get_pvalues(self):
         '''
-        Compute the significance p-value for each parameter estimate.
-        
-        p-values are computed parametrically using the t-test. 
-        p-values are computed parametrically using the t-test. 
-        
+        Compute the significance p-value for each parameter estimate using the
+        t-test. The degrees of freedom (df) are calculated as the number of
+        observations minus the number of predictors.
+
+        Model should be fitted before p-values can be calculated.
+
         Parameters
         ----------
-        None
-        
+        self.n_samples (int): The number of samples in X.
+        self.n_features (int): The number of features in X.
+        self.test_statistics (array-like): The calculated t-test statistic values.
+
         Returns
         -------
-        pd.Dataframe:
-            The significance p-values for each parameter in the model.
-        
+        array-like: The significance p-values for each parameter in the model.
+
         Examples
         --------
         >>> data = pd.DataFrame({
@@ -221,8 +237,12 @@ class LinearModel:
         >>> model.fit(y, X)
         >>> model.get_pvalues()
         '''
-        return
-    
+        self.df = self.n_samples - (self.n_features + 1)
+        if self.df <= 0:
+            raise ValueError("Degrees of freedom must be greater than 0.")
+        self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistic]
+        return self.pvalues
+
     def summary(self, **kwargs) -> pd.DataFrame:
         '''
         Provides a summary of the model fit, similar to the output of the R summary() function when computed on

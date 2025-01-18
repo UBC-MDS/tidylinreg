@@ -1,5 +1,4 @@
 from tidylinreg.tidylinreg import LinearModel
-from tidylinreg.tidylinreg import LinearModel
 import pandas as pd
 import numpy as np
 from scipy.stats import norm
@@ -7,10 +6,7 @@ import pytest
 
 
 # DO NOT CHANGE SEED: some tests will fail
-# DO NOT CHANGE SEED: some tests will fail
 SEED = 524
-
-# creating test data
 
 # creating test data
 
@@ -45,17 +41,9 @@ y_one_zero_slope = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 6
 
 # a constant y = 6
 y_mlr_const = pd.Series(6*np.ones(4))
-# a constant y = 6
-y_mlr_const = pd.Series(6*np.ones(4))
 
 # a linear function y = 3x1 + 4x2 + 5x3 + 6, with noise
 y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=4,random_state=SEED)
-
-
-## Edge Cases and Adversarial Usage ##
-# a linear function y = 3x1 + 4x2 + 5x3 + 6, with noise
-y_mlr_noise = 3*X_mlr['x1'] + 4*X_mlr['x2'] + 5*X_mlr['x3'] + 6 + norm.rvs(size=4,random_state=SEED)
-
 
 ## Edge Cases and Adversarial Usage ##
 
@@ -67,7 +55,6 @@ X_mlr_categorical = pd.DataFrame({
     'x4':['blue','red','red','blue']
 })
 
-# a categorical response:
 # a categorical response:
 y_categorical = pd.Series(['red','blue','blue','yellow','blue'])
 
@@ -106,7 +93,7 @@ X_slr_empty = pd.DataFrame({'x':[]})
 X_mlr_one_sample = pd.DataFrame({
     'x1':[],
     'x2':[],
-    'x3':[],
+    'x3':[]
 })
 
 # initalize a linear model
@@ -184,3 +171,105 @@ def test_predict_throw_error():
     linear_model = LinearModel()
     with pytest.raises(ValueError):
         linear_model.predict(X_slr)
+
+
+@pytest.mark.parametrize(
+    'params, sd, expected_t',
+    [
+        (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
+         [0.5, 0.5],
+         pd.Series([4.0, 6.0])),    # test basic functionality
+        (pd.Series([10.0, 3.0], index=['(Intercept)', 'x']),
+         [1.0e-12, 1.0e-12],
+         pd.Series([1.0e13, 3.0e12])),    # test perfect fit (small se)
+        (pd.Series([0.0, 0.0], index=['(Intercept)', 'x']),
+         [1.0, 1.0],
+         pd.Series([0.0, 0.0])),    # test zero coefficient
+        (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
+         [0.0, 0.0],
+         pd.Series([np.inf, np.inf])),    # test zero se
+        (pd.Series([2.0e10, 3.0e10], index=['(Intercept)', 'x']),
+         [4.0e5, 2.0e5],
+         pd.Series([50000.0, 150000.0])),    # test very large value
+        (pd.Series([2.0e-10, 3.0e-10], index=['(Intercept)', 'x']),
+         [4.0e-5, 2.0e-5],
+         pd.Series([0.000005, 0.000015])),    # test very small value
+    ]
+)
+def test_get_test_statistic(params, sd, expected_t):
+    model = LinearModel()
+    model.params = params
+    model.std_error = sd
+    assert np.allclose(model.get_test_statistic(), expected_t, atol=0.001)
+
+
+@pytest.mark.parametrize(
+    'params, sd, expected_error',
+    [
+        (pd.Series([]),
+         [1.0, 1.0],
+         ValueError),    # test no params
+        (pd.Series([1.0, 1.0], index=['(Intercept)', 'x']),
+         [],
+         ValueError),    # test no se
+        (pd.Series([2.0, 3.0], index=['(Intercept)', 'x']),
+         [1.0, 1.0, 1.0],
+         ValueError),    # test mismatched dimensions
+    ]
+)
+def test_get_test_statistic_error(params, sd, expected_error):
+    model = LinearModel()
+    model.params = params
+    model.std_error = sd
+    with pytest.raises(expected_error):
+        model.get_test_statistic()
+
+
+@pytest.mark.parametrize(
+    'test_statistic, n_samples, expected_p',
+    [
+        (pd.Series([2.0, 3.0]),
+         20,
+         [np.float64(0.06173860653011931), np.float64(0.00805469680920945)]),   # test basic functionality
+        (pd.Series([100.0, 100.0]),
+         1000,
+         [np.float64(0.0), np.float64(0.0)]),   # test large t-statistic
+        (pd.Series([-2.0, -3.0]),
+         20,
+         [np.float64(0.06173860653011931), np.float64(0.00805469680920945)]),   # test negative t-statistic
+        (pd.Series([2.0, 3.0]),
+         4,
+         [np.float64(0.2951672353008665), np.float64(0.20483276469913347)]),   # test small degrees of freedom
+        (pd.Series([2.0, 3.0]),
+         1000000,
+         [np.float64(0.045500533852129044), np.float64(0.002699862541621245)]),   # test large degrees of freedom
+    ]
+)
+def test_get_pvalues(test_statistic, n_samples, expected_p):
+    model = LinearModel()
+    model.test_statistic = test_statistic
+    model.n_samples = n_samples
+    model.n_features = len(model.test_statistic)
+    assert np.allclose(model.get_pvalues(), expected_p, atol=0.001)
+
+
+@pytest.mark.parametrize(
+    'test_statistic, n_samples, n_features, expected_error',
+    [
+        (pd.Series([2.0, 3.0]),
+         2,
+         3,
+         ValueError),   # test invalid degrees of freedom
+        (None,
+         20,
+         2,
+         TypeError),   # test invalid test statistic
+    ]
+)
+def test_get_pvalues_error(test_statistic, n_samples, n_features, expected_error):
+    model = LinearModel()
+    model.test_statistic = test_statistic
+    model.n_samples = n_samples
+    model.n_features = n_features
+    with pytest.raises(expected_error):
+        model.get_pvalues()
