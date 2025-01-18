@@ -4,6 +4,7 @@ from numpy.linalg import inv, LinAlgError
 from scipy import stats
 from scipy.stats import t
 from numbers import Number
+import warnings
 
 class LinearModel:
     '''
@@ -167,12 +168,10 @@ class LinearModel:
         y_true = self.y
         y_pred = self.in_sample_predictions
 
-        mean_sq_error = np.mean((y_true - y_pred) ** 2)
+        RSS = np.sum((y_true - y_pred) ** 2)/(self.n_samples - self.n_features - 1)
 
-        x_bar = np.mean(x, axis=0)
-        sum_sq_deviation_x = np.sum((x - x_bar) ** 2, axis=0)
-
-        self.std_error = np.sqrt(mean_sq_error / sum_sq_deviation_x)
+        sum_sq_deviation_x = np.linalg.inv(x.T @ x).diagonal()
+        self.std_error = np.sqrt(RSS * sum_sq_deviation_x)
 
         return
 

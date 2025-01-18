@@ -26,7 +26,7 @@ def test_model():
 
 @pytest.fixture
 def ref_model():
-    model = sm.OLS(y_true, X).fit()
+    model = sm.OLS(y_true, sm.add_constant(X)).fit()
     return model
 
 def test_is_model_fitted(test_model):
@@ -46,10 +46,11 @@ def test_empty_y(test_model):
 
 def test_calculate_std_error(test_model, ref_model):
     test_model.params = beta_pred
-    test_model.X = X
+    test_model.X = np.hstack([np.ones((n,1)),X])
     test_model.y = y_true
     test_model.in_sample_predictions = y_pred
-    
+    test_model.n_samples = n
+    test_model.n_features = 1
     expected_std_error = ref_model.bse
     test_model.get_std_error()
 
@@ -60,6 +61,8 @@ def test_calculate_std_error_zero(test_model):
     test_model.X = X
     test_model.y = X * beta_true
     test_model.in_sample_predictions = X * beta_true
+    test_model.n_samples = n
+    test_model.n_features = 1
 
     expected_std_error = 0
     test_model.get_std_error()
