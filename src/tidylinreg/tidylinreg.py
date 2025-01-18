@@ -32,6 +32,7 @@ class LinearModel:
         self.std_error = None
         self.test_statistic = None
         self.ci = None
+        self.pvalues = None
   
           
     def fit(self,X,y):
@@ -293,38 +294,60 @@ class LinearModel:
         '''
         Provides a summary of the model fit, similar to the output of the R summary() function when computed on
         a fitted `lm` object.
-        
-        If model has been fitted, a dataframe containing parameter estimates, standard errors, significance
-        p-values, and (optional) standard error is returned. As is the case with other 
-        methofs, These statistics are computed using bootstrapping if 'method' attribute is set to 'bootstrap'
-        during initialization. Note that model must be fitted before summary.
-        
+
         Parameters
         ----------
-        **kwargs
-            arguments used to specify whether or not confidence intervals are included in summary,
-            and their significance level (see LinearModel.get_error_metrics documentation for details).
-            
+        **kwargs : dict
+            Additional arguments:
+            - ci : bool, optional
+                Whether to include confidence intervals. Default is False.
+            - alpha : float, optional
+                Significance level for confidence intervals. Must be between 0 and 1. Default is 0.05.
+
         Returns
         -------
         pd.DataFrame
             A DataFrame containing the summary of the fitted model.
-        
-        Examples
-        --------
-        >>> data = pd.DataFrame({
-        ...     "Feature1": [1, 2, 3],
-        ...     "Feature2": [4, 5, 6],
-        ...     "Target": [7, 8, 9]
-        ... })
-        >>> X = data[["Feature1", "Feature2"]]
-        >>> y = data["Target"]
-        >>> model = LinearModel()
-        >>> model.fit(y, X)
-        >>> model.summary(ci=True, alpha = 0.5)
+
+        Raises
+        ------
+        ValueError
+            If the model is not fitted or `alpha` is out of range.
         '''
-        return
-        
-    
-    
-    
+        # Ensure the model is fitted
+        if self.params is None:
+            raise ValueError("Model must be fitted before generating a summary.")
+
+        # Extract arguments from kwargs with defaults
+        ci = bool(kwargs.get("ci", False))
+        alpha = kwargs.get("alpha", 0.05)
+
+        # Validate alpha for confidence intervals
+        if ci and (alpha <= 0 or alpha >= 1):
+            raise ValueError("Alpha must be between 0 and 1.")
+
+        # Compute standard errors, test statistics, and p-values if not already done
+        if self.std_error is None:
+            self.get_std_error()
+        if self.test_statistic is None:
+            self.get_test_statistic()
+        if self.pvalues is None:
+            self.get_pvalues()
+
+        # Create summary DataFrame
+        summary_df = pd.DataFrame({
+            "Parameter": self.param_names,
+            "Estimate": self.params.values,
+            "Std. Error": self.std_error,
+            "T-Statistic": self.test_statistic,
+            "P-Value": self.pvalues,
+        })
+
+        # Add confidence intervals if requested
+        if ci:
+            if self.ci is None:
+                self.get_ci(alpha=alpha)
+            summary_df["CI Lower"] = self.ci[:, 0]
+            summary_df["CI Upper"] = self.ci[:, 1]
+
+        return summary_df
