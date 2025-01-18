@@ -167,13 +167,13 @@ class LinearModel:
         from scipy.stats import t
         from numbers import Number
 
-        if self.params == None:
+        if self.params is None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
         
-        if self.X == None:
+        if self.X is None:
             raise ValueError("Train data (X) is not found. Has the model been fitted?")
         
-        if self.y == None:
+        if self.y is None:
             raise ValueError("Train data (y) is not found. Has the model been fitted?")        
         
         if not isinstance(alpha, Number):
@@ -183,26 +183,17 @@ class LinearModel:
             raise ValueError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
 
         x = self.X
-        test_statistic = self.test_statistic
+        betas = self.params
         n, p = x.shape
         df = n - p
 
         std_error = self.std_error
         t_critical = t.ppf(1 - alpha / 2, df)
-        self.ci = np.array([0, 0])
+        margin_of_error = std_error * t_critical
 
-        match type:
-            case "two-tailed":
-                self.ci[0] = test_statistic - (std_error * t_critical)
-                self.ci[1] = test_statistic + (std_error * t_critical)
-
-            case "lower":
-                self.ci[0] = test_statistic - (std_error * t_critical)
-                self.ci[1] = np.inf
-
-            case "upper":
-                self.ci[0] = -np.inf
-                self.ci[1] = test_statistic + (std_error * t_critical)
+        self.ci = np.zeros((p, 2))
+        self.ci[:, 0] = betas - margin_of_error
+        self.ci[:, 1] = betas + margin_of_error
 
         return
     
