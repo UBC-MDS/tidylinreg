@@ -23,6 +23,8 @@ class LinearModel:
         self.y = None
         self.in_sample_predictions = None
         self.std_error = None
+        self.test_statistic = None
+        self.ci = None
   
           
     def fit(self,X,y):
@@ -148,20 +150,15 @@ class LinearModel:
         '''
         return
     
-    def get_ci(self, type="two-tailed", alpha=0.05):
+    def get_ci(self, alpha=0.05):
         '''
-        Get the confidence interval obtained from a lower- or upper-tailed or two-tailed
-        hypothesis test for the statistical significance of the coefficients in the model.
+        Get the confidence interval obtained from a two-tailed hypothesis test for the statistical significance of the coefficients in the model.
 
         The confidence interval(s) for the coefficients in the fitted model are computed and returned.
         Note that model must be fitted first.       
 
         Parameters
         ----------
-        type : str
-            The type of hypothesis testing conducted. By default, "two-tailed".
-            Possible types: ["lower", "upper", "two-tailed"]
-
         alpha : float, optional
             The significance level used to compute confidence intervals. By default, 0.05 (ie. a 95% C.I).
             If ci=False, does nothing.
@@ -179,13 +176,6 @@ class LinearModel:
         if self.y == None:
             raise ValueError("Train data (y) is not found. Has the model been fitted?")        
         
-        if not isinstance(type, str):
-            raise TypeError("`type` argument must be a string containing one of the following:\n [\"lower\", \"upper\", \"two-tailed\"]")
-
-        valid_type = ["lower", "upper", "two-tailed"]
-        if type not in valid_type:
-            raise ValueError("`type` argument must be a string containing one of the following:\n [\"lower\", \"upper\", \"two-tailed\"]")
-        
         if not isinstance(alpha, Number):
             raise TypeError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
         
@@ -193,25 +183,26 @@ class LinearModel:
             raise ValueError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
 
         x = self.X
-        test_statistic = self.get_test_statistic(x)
+        test_statistic = self.test_statistic
         n, p = x.shape
         df = n - p
 
-        std_error = self.get_std_error()
+        std_error = self.std_error
         t_critical = t.ppf(1 - alpha / 2, df)
+        self.ci = np.array([0, 0])
 
         match type:
             case "two-tailed":
-                self.lower_ci = test_statistic - (std_error * t_critical)
-                self.upper_ci = test_statistic + (std_error * t_critical)
+                self.ci[0] = test_statistic - (std_error * t_critical)
+                self.ci[1] = test_statistic + (std_error * t_critical)
 
             case "lower":
-                self.lower_ci = test_statistic - (std_error * t_critical)
-                self.upper_ci = np.inf
+                self.ci[0] = test_statistic - (std_error * t_critical)
+                self.ci[1] = np.inf
 
             case "upper":
-                self.lower_ci = -np.inf
-                self.upper_ci = test_statistic + (std_error * t_critical)
+                self.ci[0] = -np.inf
+                self.ci[1] = test_statistic + (std_error * t_critical)
 
         return
     
