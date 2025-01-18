@@ -1,3 +1,5 @@
+import pandas as pd
+
 class LinearModel:
     '''
     A Linear Model class for various regression tasks, implemented in the style of the R lm()
@@ -19,6 +21,8 @@ class LinearModel:
         self.param_names = None
         self.X = None
         self.y = None
+        self.in_sample_predictions = None
+        self.std_error = None
   
           
     def fit(self,X,y):
@@ -102,18 +106,18 @@ class LinearModel:
         '''
         import numpy as np
 
-        if self.params == None:
+        if self.params is None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
         
-        if self.X == None:
+        if self.X is None:
             raise ValueError("Train data (X) is not found. Has the model been fitted?")
         
-        if self.y == None:
+        if self.y is None:
             raise ValueError("Train data (y) is not found. Has the model been fitted?")
 
         x = self.X
         y_true = self.y
-        y_pred = self.predict(x)
+        y_pred = self.in_sample_predictions
 
         mean_sq_error = np.mean((y_true - y_pred) ** 2)
 
@@ -168,6 +172,12 @@ class LinearModel:
 
         if self.params == None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
+        
+        if self.X == None:
+            raise ValueError("Train data (X) is not found. Has the model been fitted?")
+        
+        if self.y == None:
+            raise ValueError("Train data (y) is not found. Has the model been fitted?")        
         
         if not isinstance(type, str):
             raise TypeError("`type` argument must be a string containing one of the following:\n [\"lower\", \"upper\", \"two-tailed\"]")
