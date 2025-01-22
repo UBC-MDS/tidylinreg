@@ -307,14 +307,10 @@ class LinearModel:
         self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistic]
         return self.pvalues
 
-    def summary(self, **kwargs) -> pd.DataFrame:
+    def summary(self, ci=False, alpha=0.05) -> pd.DataFrame:
         # Ensure the model is fitted
         if self.params is None:
             raise ValueError("Model must be fitted before generating a summary.")
-
-        # Extract arguments from kwargs with defaults
-        ci = bool(kwargs.get("ci", False))
-        alpha = kwargs.get("alpha", 0.05)
 
         # Validate alpha for confidence intervals
         if ci and (alpha <= 0 or alpha >= 1):
