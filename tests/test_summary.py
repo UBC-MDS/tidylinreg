@@ -78,7 +78,9 @@ def test_summary_invalid_alpha(linear_model, example_data):
     """Test that an error is raised for invalid alpha values."""
     X, y = example_data
     linear_model.fit(X, y)
-    
+ 
+    with pytest.raises(TypeError):
+        linear_model.summary(ci=True, alpha="hello")    
     with pytest.raises(ValueError):
         linear_model.summary(ci=True, alpha=0)
     with pytest.raises(ValueError):

@@ -330,12 +330,17 @@ class LinearModel:
         ------
         ValueError
             If model is not fitted (`fit()` has not been called).
+        TypeError
+            If `alpha` provided is not of numeric type.
         ValueError
             If `alpha` provided does not fall in the range of (0, 1).
         """
         # Ensure the model is fitted
         if self.params is None:
             raise ValueError("Model must be fitted before generating a summary.")
+        
+        if not isinstance(alpha, Number):
+            raise TypeError("`alpha` argument must be of numeric type that is greater than 0 and smaller than 1")
 
         # Validate alpha for confidence intervals
         if ci and (alpha <= 0 or alpha >= 1):
