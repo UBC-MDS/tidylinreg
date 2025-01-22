@@ -290,8 +290,7 @@ class LinearModel:
         of freedom, where n is n_samples and p is n_features
         in `X` (refer to `fit()` method).
         
-        The model must be fitted before confidence interval can 
-        be calaculated.
+        The model must be fitted before confidence interval can be calaculated.
 
         Returns
         -------
@@ -308,6 +307,32 @@ class LinearModel:
         return self.pvalues
 
     def summary(self, ci=False, alpha=0.05) -> pd.DataFrame:
+        """
+        Summarizes the fit of the linear regression model.
+
+        The model must be fitted before confidence interval can be calaculated.
+
+        Parameters
+        ----------
+        ci : bool, optional
+            Whether to include confidence intervals in the summary, 
+            by default False
+        alpha : float, optional
+            Significance level for confidence intervals,
+            by default 0.05
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing the summary of the fitted model.
+
+        Raises
+        ------
+        ValueError
+            If model is not fitted (`fit()` has not been called).
+        ValueError
+            If `alpha` provided does not fall in the range of (0, 1).
+        """
         # Ensure the model is fitted
         if self.params is None:
             raise ValueError("Model must be fitted before generating a summary.")
