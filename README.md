@@ -1,6 +1,7 @@
 # tidylinreg
 ![Python 3.13](https://img.shields.io/badge/python-3.13-blue?style=flat&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2Frelease%2Fpython-3130%2F%3Ffeatured_on%3Dpythonbytes)
 ![Documentation Status](https://readthedocs.org/projects/tidylinreg/badge/?version=latest)
+
 This package provides tools for linear regression in python,
 with a similar style to the `lm` and `summary` functions in R.
 
@@ -35,13 +36,16 @@ where, for example, insignificant parameters can easily be filtered out!
     - The output includes parameter names, estimates, standard errors, test statistics, and significance p-values as a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
     - Additionally, the user can choose to include confidence interval estimates of their parameters, and can specify the significance level.
 
+The user can access specific aspects of the `summary` function using `get_std_error`, `get_test_statistic`, `get_ci`, and `get_pvalues`.
+However, we reccommend using `summary` to access these estimates.
+
 ## Python Ecosystem
 
 There are existing models for linear regression in Python, such as [`Ridge`](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.Ridge.html) from the [`sklearn`](https://scikit-learn.org/1.5/index.html) package. 
 The `tidylinreg` package provides similar `fit` and `predict` functionality,
 with the added functionality to compute statistical metrics about the linear model, including standard error, confidence intervals, and p-values.
 Similar to `tidylinreg`, [`statsmodels`](https://www.statsmodels.org/stable/index.html) is a package that can perform statistical tests on different types of models,
-including ordinary least squares.
+including ordinary least squares. The advantage of `tidylinreg` is the usage of Pandas Dataframes as an output, which assists in optimizing workflows and inference.
 
 ## Contributing
 
