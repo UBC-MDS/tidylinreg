@@ -1,6 +1,6 @@
 # tidylinreg
 ![Python 3.13](https://img.shields.io/badge/python-3.13-blue?style=flat&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2Frelease%2Fpython-3130%2F%3Ffeatured_on%3Dpythonbytes)
-
+![Documentation Status](https://readthedocs.org/projects/tidylinreg/badge/?version=latest)](https://tidylinreg.readthedocs.io/en/latest/?badge=latest)
 
 This package provides tools for linear regression in python,
 with a similar style to the `lm` and `summary` functions in R.
@@ -31,7 +31,7 @@ where, for example, insignificant parameters can easily be filtered out!
     - For convenience, the intercept is automatically included into the regression model. No need to modify your data to accomodate this!
 - `predict`:
     - Predict the response using given test regressor data. Remember to fit the model first!
-- `summary`: 
+- `summary`:
     - Provides a summary of the model fit, similar to the output of the R [`summary()`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/summary.lm) function when computed on a fitted `lm` object.
     - The output includes parameter names, estimates, standard errors, test statistics, and significance p-values as a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html)
     - Additionally, the user can choose to include confidence interval estimates of their parameters, and can specify the significance level.
