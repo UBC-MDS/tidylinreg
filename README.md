@@ -30,7 +30,10 @@ Similar to `tidylinreg`, [`statsmodels`](https://www.statsmodels.org/stable/inde
 
 ## Contributing
 
-Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+Interested in contributing? Check out the [contributing guidelines](https://github.com/UBC-MDS/tidylinreg/blob/main/CONTRIBUTING.md).
+Please note that this project is released with a [Code of Conduct](https://github.com/UBC-MDS/tidylinreg/blob/main/CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.
+
 
 ## License
 
