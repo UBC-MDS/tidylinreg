@@ -68,7 +68,8 @@ Once `tidylinreg` is installed, you can import the `LinearModel` object to begin
 2. **Summary Statistics**
 
     Once the regression parameters are estimated, we can summarize their errors and significance using the
-    `summary` method
+    `summary` method:
+    
     ```python
     my_linear_model.summary()
     ```
@@ -83,6 +84,18 @@ Once `tidylinreg` is installed, you can import the `LinearModel` object to begin
 
     ```python
     my_linear_model.summary(ci=True, alpha=0.01)
+    ```
+
+3. **Make Predictions**
+
+Now we can make predictions using the `predict` method! Lets suppose we have a subset of our data allocated as
+test data. To make predictions, we can do the following:
+
+    ```python
+    testing_data = pd.read_csv('path/to/your/testing_data.csv')
+    X_test = testing_data.drop(columns='response')
+    
+    linear_model.predict(X_test)
     ```
 
 ## Python Ecosystem
