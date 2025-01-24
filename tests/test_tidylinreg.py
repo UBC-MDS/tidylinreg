@@ -200,7 +200,8 @@ def test_get_test_statistic(params, sd, expected_t):
     model = LinearModel()
     model.params = params
     model.std_error = sd
-    assert np.allclose(model.get_test_statistic(), expected_t, atol=0.001)
+    model.get_test_statistic()
+    assert np.allclose(model.test_statistic, expected_t, atol=0.001)
 
 
 @pytest.mark.parametrize(

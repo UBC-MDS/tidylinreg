@@ -7,20 +7,22 @@ from numbers import Number
 import warnings
 
 class LinearModel:
-    '''
-    A Linear Model class for various regression tasks, implemented in the style of the R lm()
-    function and able to perform bootstrapped estimations.
-    '''   
-    
+    """
+    Ordinary least-squares linear regression for continuous predictors.
+
+    LinearModel is a scaled-down Python implementation of stats::lm in R.
+    It can be used to carry out ordinary least-squares regression with
+    continuous predictors only, as well as hypothesis testing for the
+    statistical significance of the coefficients of the predictors.
+    """
     def __init__(self):
-        '''
-        Initialize LinearModel class.
-        
-        Parameters
-        ----------
-        None
-        
-        '''
+        self.initialize()
+        return
+    
+    def initialize(self):
+        """
+        Initialize the components of the model.
+        """
         self.params = None
         self.param_names = None
         self.X = None
@@ -37,22 +39,38 @@ class LinearModel:
   
           
     def fit(self,X,y):
-        '''
+        """
         Fits the linear model to the provided data.
 
         Parameters
         ----------
-        X : pd.DataFrame
-            A matrix of named explanatory variables. Expecting shape (n_samples, n_features).
-        y : pd.Series
-            The observed response vector. Expecting shape (n_samples,).
+        X : pd.DataFrame of shape (n_samples, n_features)
+            A matrix of named explanatory variables.
+        y : pd.Series of shape (n_samples,) 
+            The observed response vector.
+
+        Raises
+        ------
+        ValueError
+            If there are less than 2 rows in `X` and/or `y`.
+        TypeError
+            If there are non-numeric entries in `X` and/or `y`.
+        ValueError
+            If any cell in `X` and/or `y` is empty.
+        ValueError
+            If `X` and `y` do not have matching dimensions.
+        ValueError
+            If collinearity is detected in `X`.
 
         Returns
         -------
-        None
-        
+        self : `LinearModel` object
+            Fitted regression model.
+
         Examples
         --------
+        >>> from tidylinreg.tidylinreg import LinearModel
+        >>> import pandas as pd
         >>> data = pd.DataFrame({
         ...     "Feature1": [1, 2, 3],
         ...     "Feature2": [4, 5, 6],
@@ -62,7 +80,7 @@ class LinearModel:
         >>> y = data["Target"]
         >>> model = LinearModel()
         >>> model.fit(y, X)
-        '''
+        """
         # check number of samples
         if len(y) < 2 or len(X) < 2:
             raise ValueError('less than 2 samples in X or y')
@@ -103,10 +121,10 @@ class LinearModel:
         
 
     def predict(self,X):
-        '''
-        Predicts the response variable using the given data. 
-        
-        Note that the model must be fitted before prediction can occur.
+        """
+        Predicts the response values from a given matrix. 
+
+        The model must be fitted before prediction can occur.
 
         Parameters
         ----------
@@ -116,45 +134,45 @@ class LinearModel:
         Returns
         -------
         array-like of shape (n_samples,)
-            The predicted target values.
-            
+            The predicted target values.      
+
+        Raises
+        ------
+        ValueError
+            If model is not fitted (`fit()` has not been called).
+        
         Examples
         --------
-        >>> train_data = pd.DataFrame({
-        ...     "Feature1": [1, 2, 3],
-        ...     "Feature2": [4, 5, 6],
-        ...     "Target": [7, 8, 9]
-        ... })
-        ...
-        >>> X_train = train_data[["Feature1", "Feature2"]]
-        >>> y_train = train_data["Target"]
-        ...
-        >>> model = LinearModel()
-        >>> model.fit(y_train, X_test)
-        ...
         >>> X_test = pd.DataFrame({
         ...     "Feature1": [0, 1, 2],
         ...     "Feature2": [3, 4, 5],
         ... })
-        >>> y_pred = model.predict(test_data)
-        '''
+        >>> y_pred = model.predict(test_data)  
+        """
         if type(self.params) == type(None): raise ValueError('model has not been fitted')
         
         X_ones = np.hstack([np.ones([self.n_samples,1]),X])
         return X_ones @ self.params
     
     def get_std_error(self):
-        '''
-        Get the standard error for parameter estimates.
+        """
+        Compute the standard error for parameter estimates.
 
-        The standard error for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.      
+        The model must be fitted before standard error can be calculated.
+
+        Raises
+        ------
+        ValueError
+            If model is not fitted (`fit()` has not been called).
 
         Returns
         -------
-        array-like of shape (n_features,)
-            The calculated standard error values.
-        '''
+        None
+
+        Notes
+        -----
+        Results can be accessed by calling `summary()`.
+        """
         if self.params is None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
         
@@ -176,52 +194,65 @@ class LinearModel:
         return
 
     def get_test_statistic(self):
-        '''
-        Get the t-test statistic of parameter estimates to be used
-        in hypothesis testing for statistical significance.
+        """
+        Compute the test statistic of the parameter estimates 
+        for hypothesis testing.
 
-        The t-test statistic for the coefficients in the fitted model are
-        computed and returned. Note that model must be fitted first.
+        The model must be fitted before test statistic(s) 
+        can be calculated.
 
-        Parameters
-        ----------
-        self.params (array-like): The fitted model coefficients.
-        self.std_error (array-like): The calculated standard error values.
+        Raises
+        ------
+        ValueError
+            If model is not fitted (`fit()` has not been called).
 
         Returns
         -------
-        array-like: The calculated t-test statistic values.
+        None
 
-        Examples
-        --------
-        >>> data = pd.DataFrame({
-        ...     "Feature1": [1, 2, 3],
-        ...     "Feature2": [4, 5, 6],
-        ...     "Target": [7, 8, 9]
-        ... })
-        >>> X = data[["Feature1", "Feature2"]]
-        >>> y = data["Target"]
-        >>> model = LinearModel()
-        >>> model.fit(y, X)
-        >>> model.get_test_statistic()
-        '''
-
+        Notes
+        -----
+        Results can be accessed by calling `summary()`.
+        """
         self.test_statistic = (self.params / self.std_error).values
-        return self.test_statistic
+
+        return
 
     def get_ci(self, alpha=0.05):
-        '''
-        Get the confidence interval obtained from a two-tailed hypothesis test for the statistical significance of the coefficients in the model.
+        """
+        Get the confidence interval of the parameter estimates.
 
-        The confidence interval(s) for the coefficients in the fitted model are computed and returned.
-        Note that model must be fitted first.       
+        The confidence interval of the parameter estimates are
+        obtained to determine the statistical significance of the
+        parameter estimates by conducting a two-tailed hypothesis 
+        test with significance level = `alpha`.
+
+        The model must be fitted before confidence interval can 
+        be calaculated.
 
         Parameters
         ----------
         alpha : float, optional
-            The significance level used to compute confidence intervals. By default, 0.05 (ie. a 95% C.I).
-            If ci=False, does nothing.
-        '''
+            The significance level used to compute confidence intervals,
+            by default 0.05
+
+        Raises
+        ------
+        ValueError
+            If model is not fitted (`fit()` has not been called).
+        TypeError
+            If `alpha` provided is not of numeric type.
+        ValueError
+            If `alpha` provided does not fall in the range of (0, 1).
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        Results can be accessed by calling `summary()`.
+        """
         if self.params is None:
             raise ValueError("The model must be fitted before standard error values can be computed.")
         
@@ -232,7 +263,7 @@ class LinearModel:
             raise ValueError("Train data (y) is not found. Has the model been fitted?")        
         
         if not isinstance(alpha, Number):
-            raise TypeError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
+            raise TypeError("`alpha` argument must be of numeric type that is greater than 0 and smaller than 1")
         
         if not ((alpha > 0) and (alpha < 1)):
             raise ValueError("`alpha` argument must be a of numeric type that is greater than 0 and smaller than 1")
@@ -253,55 +284,42 @@ class LinearModel:
         return
 
     def get_pvalues(self):
-        '''
-        Compute the significance p-value for each parameter estimate using the
-        t-test. The degrees of freedom (df) are calculated as the number of
-        observations minus the number of predictors.
-
-        Model should be fitted before p-values can be calculated.
-
-        Parameters
-        ----------
-        self.n_samples (int): The number of samples in X.
-        self.n_features (int): The number of features in X.
-        self.test_statistics (array-like): The calculated t-test statistic values.
+        """
+        Compute the p-value for each parameter estimate
+        obtained from conducting a t-test with n-p degrees
+        of freedom, where n is n_samples and p is n_features
+        in `X` (refer to `fit()` method).
+        
+        The model must be fitted before confidence interval can be calaculated.
 
         Returns
         -------
-        array-like: The significance p-values for each parameter in the model.
+        None
 
-        Examples
-        --------
-        >>> data = pd.DataFrame({
-        ...     "Feature1": [1, 2, 3],
-        ...     "Feature2": [4, 5, 6],
-        ...     "Target": [7, 8, 9]
-        ... })
-        >>> X = data[["Feature1", "Feature2"]]
-        >>> y = data["Target"]
-        >>> model = LinearModel()
-        >>> model.fit(y, X)
-        >>> model.get_pvalues()
-        '''
+        Notes
+        -----
+        Results can be accessed by calling `summary()`.      
+        """
         self.df = self.n_samples - (self.n_features + 1)
         if self.df <= 0:
             raise ValueError("Degrees of freedom must be greater than 0.")
         self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistic]
         return self.pvalues
 
-    def summary(self, **kwargs) -> pd.DataFrame:
-        '''
-        Provides a summary of the model fit, similar to the output of the R summary() function when computed on
-        a fitted `lm` object.
+    def summary(self, ci=False, alpha=0.05) -> pd.DataFrame:
+        """
+        Summarizes the fit of the linear regression model.
+
+        The model must be fitted before confidence interval can be calaculated.
 
         Parameters
         ----------
-        **kwargs : dict
-            Additional arguments:
-            - ci : bool, optional
-                Whether to include confidence intervals. Default is False.
-            - alpha : float, optional
-                Significance level for confidence intervals. Must be between 0 and 1. Default is 0.05.
+        ci : bool, optional
+            Whether to include confidence intervals in the summary, 
+            by default False
+        alpha : float, optional
+            Significance level for confidence intervals,
+            by default 0.05
 
         Returns
         -------
@@ -311,15 +329,33 @@ class LinearModel:
         Raises
         ------
         ValueError
-            If the model is not fitted or `alpha` is out of range.
-        '''
+            If model is not fitted (`fit()` has not been called).
+        TypeError
+            If `alpha` provided is not of numeric type.
+        ValueError
+            If `alpha` provided does not fall in the range of (0, 1).
+
+        Examples
+        --------
+        >>> from tidylinreg.tidylinreg import LinearModel
+        >>> import pandas as pd
+        >>> data = pd.DataFrame({
+        ...     "Feature1": [1, 2, 3],
+        ...     "Feature2": [4, 5, 6],
+        ...     "Target": [7, 8, 9]
+        ... })
+        >>> X = data[["Feature1", "Feature2"]]
+        >>> y = data["Target"]
+        >>> model = LinearModel()
+        >>> model.fit(y, X)
+        >>> regression_summary = model.summary()
+        """
         # Ensure the model is fitted
         if self.params is None:
             raise ValueError("Model must be fitted before generating a summary.")
-
-        # Extract arguments from kwargs with defaults
-        ci = bool(kwargs.get("ci", False))
-        alpha = kwargs.get("alpha", 0.05)
+        
+        if not isinstance(alpha, Number):
+            raise TypeError("`alpha` argument must be of numeric type that is greater than 0 and smaller than 1")
 
         # Validate alpha for confidence intervals
         if ci and (alpha <= 0 or alpha >= 1):
