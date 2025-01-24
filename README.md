@@ -98,6 +98,20 @@ Once `tidylinreg` is installed, you can import the `LinearModel` object to begin
     linear_model.predict(X_test)
     ```
 
+## Testing `tidylinreg`
+
+To test the `tidylinreg` package, you will need to install `pytest` in your python environment:
+
+    ```bash
+    $ pip install pytest
+    ```
+
+Then, `git clone` this repository and navigate to the root directory. Execute the following command in your terminal:
+
+    ```bash
+    $ pytest
+    ```
+
 ## Python Ecosystem
 
 There are existing models for linear regression in Python, such as [`Ridge`](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.Ridge.html) from the [`sklearn`](https://scikit-learn.org/1.5/index.html) package. 
