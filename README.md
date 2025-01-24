@@ -1,20 +1,18 @@
 # tidylinreg
 
-A linear regression package with statistical testing for each estimator.
-
-## Contributors
-
-Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan
+This package provides tools for linear regression in python,
+with a similar style to the `lm` and `summary` functions in R.
 
 ## Installation
-
+You can install this package by running the following command in your terminal:
 ```bash
 $ pip install tidylinreg
 ```
 
 ## Summary
 
-The `tidylinreg` package fits a linear model to a dataset, and can be used to carry out regression. `tidylinreg` computes and returns a list of summary statistics of the fitted linear model, including standard error, confidence intervals, and p-values.
+The `tidylinreg` package fits a linear model to a dataset, and can be used to carry out regression. 
+`tidylinreg` computes and returns a list of summary statistics of the fitted linear model, including standard error, confidence intervals, and p-values.
 
 ## Functions
 
@@ -36,7 +34,8 @@ Interested in contributing? Check out the contributing guidelines. Please note t
 
 ## License
 
-`tidylinreg` was created by Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan. It is licensed under the terms of the MIT license.
+`tidylinreg` was created by Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan. It is licensed under the terms of the MIT license,
+which can be viewed [here](https://github.com/UBC-MDS/passwordler/blob/main/LICENSE).
 
 ## Credits
 
@@ -48,3 +47,8 @@ Interested in contributing? Check out the contributing guidelines. Please note t
 - R `summary.lm()` - https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/summary.lm
 - sklearn Linear Models - https://scikit-learn.org/1.5/modules/linear_model.html
 - sklearn Ridge - https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.Ridge.html
+
+
+## Contributors
+
+Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan
