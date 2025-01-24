@@ -1,7 +1,6 @@
 # tidylinreg
 ![Python 3.13](https://img.shields.io/badge/python-3.13-blue?style=flat&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2Frelease%2Fpython-3130%2F%3Ffeatured_on%3Dpythonbytes)
-![Documentation Status](https://readthedocs.org/projects/tidylinreg/badge/?version=latest)](https://tidylinreg.readthedocs.io/en/latest/?badge=latest)
-
+![Documentation Status](https://readthedocs.org/projects/tidylinreg/badge/?version=latest)
 This package provides tools for linear regression in python,
 with a similar style to the `lm` and `summary` functions in R.
 
