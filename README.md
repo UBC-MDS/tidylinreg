@@ -102,15 +102,15 @@ Once `tidylinreg` is installed, you can import the `LinearModel` object to begin
 
 To test the `tidylinreg` package, you will need to install `pytest` in your python environment:
 
-    ```bash
-    $ pip install pytest
-    ```
+```bash
+$ pip install pytest
+```
 
 Then, `git clone` this repository and navigate to the root directory. Execute the following command in your terminal:
 
-    ```bash
-    $ pytest
-    ```
+```bash
+$ pytest
+```
 
 ## Python Ecosystem
 
