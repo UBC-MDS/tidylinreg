@@ -134,20 +134,20 @@ class LinearModel:
         Returns
         -------
         array-like of shape (n_samples,)
-            The predicted target values.
+            The predicted target values.      
 
+        Raises
+        ------
+        ValueError
+            If model is not fitted (`fit()` has not been called).
+        
         Examples
         --------
         >>> X_test = pd.DataFrame({
         ...     "Feature1": [0, 1, 2],
         ...     "Feature2": [3, 4, 5],
         ... })
-        >>> y_pred = model.predict(test_data)        
-
-        Raises
-        ------
-        ValueError
-            If model is not fitted (`fit()` has not been called).
+        >>> y_pred = model.predict(test_data)  
         """
         if type(self.params) == type(None): raise ValueError('model has not been fitted')
         
@@ -334,6 +334,21 @@ class LinearModel:
             If `alpha` provided is not of numeric type.
         ValueError
             If `alpha` provided does not fall in the range of (0, 1).
+
+        Examples
+        --------
+        >>> from tidylinreg.tidylinreg import LinearModel
+        >>> import pandas as pd
+        >>> data = pd.DataFrame({
+        ...     "Feature1": [1, 2, 3],
+        ...     "Feature2": [4, 5, 6],
+        ...     "Target": [7, 8, 9]
+        ... })
+        >>> X = data[["Feature1", "Feature2"]]
+        >>> y = data["Target"]
+        >>> model = LinearModel()
+        >>> model.fit(y, X)
+        >>> regression_summary = model.summary()
         """
         # Ensure the model is fitted
         if self.params is None:
