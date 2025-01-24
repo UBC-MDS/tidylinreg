@@ -28,6 +28,8 @@ where, for example, insignificant parameters can easily be filtered out!
     the object must be fitted to the data before anything else!
     - Please be advised that at the current state of development, `fit` only accepts continuous regressors. If your data is categorical,
     first transforming into dummy variables with encoding techniques, such as [One-Hot Encoding](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)
+    - Watch out for collinearity! `tidlinreg` will let you know if there is any linear dependence in your data
+    before fitting.
     provided by Scikit-Learn.
     - For convenience, the intercept is automatically included into the regression model. No need to modify your data to accomodate this!
 - `predict`:
@@ -39,6 +41,49 @@ where, for example, insignificant parameters can easily be filtered out!
 
 The user can access specific aspects of the `summary` function using `get_std_error`, `get_test_statistic`, `get_ci`, and `get_pvalues`.
 However, we reccommend using `summary` to access these estimates.
+
+## Documentation
+Detailed documentation for `tidylinreg` can be found [here](https://tidylinreg.readthedocs.io/en/latest/).
+
+## Using `tidylinreg`
+
+Once `tidylinreg` is installed, you can import the `LinearModel` object to begin your regression analysis!
+
+1. **Fitting the model**
+
+    Before anything else, we need to fit the model to our data:
+
+    ```python
+    from tidylinreg.tidylinreg import LinearModel
+    import pandas as pd
+
+    training_data = pd.read_csv('path/to/your/training_data.csv')
+    X_train = training_data.drop(columns='response')
+    y_train = training_data['response']
+
+    my_linear_model = LinearModel()
+    my_linear_model.fit(X_train,y_train)
+    ```
+
+2. **Summary Statistics**
+
+    Once the regression parameters are estimated, we can summarize their errors and significance using the
+    `summary` method
+    ```python
+    my_linear_model.summary()
+    ```
+
+    By default, the confidence intervals will not be included. We can change this by setting the `ci` argument to `True`:
+
+    ```python
+    my_linear_model.summary(ci=True)
+    ```
+
+    The default significance level is 0.05, giving 95% confidence intervals. We can change this by modifying the `alpha` arguument. For example, if we want wider 99% confidence intervals, we can set `alpha` to 0.01:
+
+    ```python
+    my_linear_model.summary(ci=True, alpha=0.01)
+    ```
 
 ## Python Ecosystem
 
@@ -53,7 +98,6 @@ including ordinary least squares. The advantage of `tidylinreg` is the usage of 
 Interested in contributing? Check out the [Contributing Guidelines](https://github.com/UBC-MDS/tidylinreg/blob/main/CONTRIBUTING.md).
 Please note that this project is released with a [Code of Conduct](https://github.com/UBC-MDS/tidylinreg/blob/main/CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
-
 
 ## License
 
