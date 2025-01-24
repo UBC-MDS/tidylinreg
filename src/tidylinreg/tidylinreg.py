@@ -151,7 +151,7 @@ class LinearModel:
         """
         if type(self.params) == type(None): raise ValueError('model has not been fitted')
         
-        X_ones = np.hstack([np.ones([self.n_samples,1]),X])
+        X_ones = np.hstack([np.ones([len(X),1]),X])
         return X_ones @ self.params
     
     def get_std_error(self):
