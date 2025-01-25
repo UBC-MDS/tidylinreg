@@ -144,5 +144,7 @@ which can be viewed [here](https://github.com/UBC-MDS/passwordler/blob/main/LICE
 
 
 ## Contributors
-
-Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan
+- Benjamin Frizzell
+- Danish Karlin Isa
+- Nicholas Varabioff
+- Yasmin Hassan
