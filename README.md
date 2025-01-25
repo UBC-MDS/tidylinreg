@@ -129,7 +129,7 @@ By contributing to this project, you agree to abide by its terms.
 ## License
 
 `tidylinreg` was created by Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan. It is licensed under the terms of the MIT license,
-which can be viewed [here](https://github.com/UBC-MDS/passwordler/blob/main/LICENSE).
+which can be viewed [here](https://github.com/UBC-MDS/tidylinreg/blob/main/LICENSE).
 
 ## Credits
 
