@@ -228,7 +228,7 @@ class LinearModel:
         test with significance level = `alpha`.
 
         The model must be fitted before confidence interval can 
-        be calaculated.
+        be calculated.
 
         Parameters
         ----------
@@ -298,7 +298,7 @@ class LinearModel:
 
         Notes
         -----
-        Results can be accessed by calling `summary()`.      
+        Results can be accessed by calling `summary()`.    
         """
         self.df = self.n_samples - (self.n_features + 1)
         if self.df <= 0:
@@ -310,7 +310,17 @@ class LinearModel:
         """
         Summarizes the fit of the linear regression model.
 
-        The model must be fitted before confidence interval can be calaculated.
+        This method provides an overview of the fitted regression model, 
+        including parameter estimates, standard errors, test statistics, 
+        and p-values. If requested, confidence intervals for the parameter 
+        estimates are also included.
+
+        A small p-value (typically ≤ 0.05) indicates strong evidence against 
+        the null hypothesis, suggesting that the coefficient is statistically 
+        significant.
+
+        The model must be fitted before confidence interval can be calculated.
+        
 
         Parameters
         ----------
