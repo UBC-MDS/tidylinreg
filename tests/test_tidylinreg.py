@@ -99,6 +99,9 @@ X_mlr_one_sample = pd.DataFrame({
 # initalize a linear model
 @pytest.fixture
 def linear_model():
+    '''
+    Create an instance of LinearModel for testing purposes.
+    '''
     return LinearModel()
 
 # test fitting on linear regression gives expected parameter estimates
