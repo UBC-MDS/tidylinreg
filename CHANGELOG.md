@@ -1,6 +1,25 @@
 # CHANGELOG
 
 
+## v1.1.2 (2025-01-29)
+
+### Bug Fixes
+
+- (milestone 2 Feedback) add docstring for fixture function
+  ([`d34cd08`](https://github.com/UBC-MDS/tidylinreg/commit/d34cd08e2083106a5b8dccc708444d3fb964bf0c))
+
+- Adding docstrings for fit and predict test functions (Feedback from Milestone 2)
+  ([`318ddf1`](https://github.com/UBC-MDS/tidylinreg/commit/318ddf1ae0b3a406012ea001676c90142ebfa2ac))
+
+### Testing
+
+- Added docstrings for tests in `get_std_error`
+  ([`e91e03c`](https://github.com/UBC-MDS/tidylinreg/commit/e91e03c6528bf05e5e6677d410dbd6cc0079a903))
+
+- Added test descriptions for `get_ci`
+  ([`8bbec86`](https://github.com/UBC-MDS/tidylinreg/commit/8bbec860666db76108fde2381ab307bb9d5bcbc1))
+
+
 ## v1.1.1 (2025-01-28)
 
 ### Bug Fixes

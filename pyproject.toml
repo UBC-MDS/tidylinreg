@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tidylinreg"
-version = "1.1.1"
+version = "1.1.2"
 description = "A linear regression package with statistical testing for each estimator."
 authors = ["Benjamin Frizzell, Danish Karlin Isa, Nicholas Varabioff, Yasmin Hassan"]
 license = "MIT"
