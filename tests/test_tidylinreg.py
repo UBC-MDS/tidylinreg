@@ -117,6 +117,10 @@ def linear_model():
      pd.Series([28.978,-1.172, 6.227, 1.392],index=['(Intercept)','x1','x2','x3'])]))
 )
 def test_fit_params(linear_model,X,y,expected_params):
+    '''
+    Testing that the estimated parameters of the linear model are correct
+    after fitting to training data.
+    '''
     linear_model.fit(X,y)
     assert np.allclose(linear_model.params,expected_params,atol=0.001)
     assert (linear_model.param_names == expected_params.index).all()
@@ -138,6 +142,14 @@ def test_fit_params(linear_model,X,y,expected_params):
      ]
 )
 def test_fit_throw_error(linear_model,X,y,expected_error):
+    '''
+    Testing that the linear model throws errors for the following cases:
+    - Non-nunmeric covariates or response 
+    - Missing entries in data
+    - Collinearity in design matrix
+    - Mismatching sample sizes between covariates and response
+    - Less than two samples in covariates or response
+    '''
     with pytest.raises(expected_error):
         linear_model.fit(X,y)
 
@@ -152,7 +164,6 @@ X_mlr_test = pd.DataFrame({
 })
 y_mlr_perfect_test = 3*X_mlr_test['x1'] + 4*X_mlr_test['x2'] + 5*X_mlr_test['x3'] + 6
 
-# test for accurate model predictions
 @pytest.mark.parametrize(
     'X_fit,y_fit,X_test,expected_predictions',
     [(X_slr,y_perfect_line,X_slr,y_perfect_line),               # in-sample predictions (SLR)
@@ -162,12 +173,20 @@ y_mlr_perfect_test = 3*X_mlr_test['x1'] + 4*X_mlr_test['x2'] + 5*X_mlr_test['x3'
     ]
 )
 def test_predict(linear_model,X_fit,y_fit,X_test,expected_predictions):
+    '''
+    Testing that the predict method outputs the expected predictions on
+    test data, after fitting the linear model to training data.
+    '''
     linear_model.fit(X_fit,y_fit)
     predictions = linear_model.predict(X_test)
     assert np.allclose(predictions,expected_predictions,atol=0.001)
 
 # test that error is thrown when prediction attempted without fitting
 def test_predict_throw_error():
+    '''
+    Test that the linear model correctly throws a ValueError
+    when the predict method is called before fitting the model.
+    '''
     linear_model = LinearModel()
     with pytest.raises(ValueError):
         linear_model.predict(X_slr)
