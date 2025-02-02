@@ -79,7 +79,7 @@ class LinearModel:
         >>> X = data[["Feature1", "Feature2"]]
         >>> y = data["Target"]
         >>> model = LinearModel()
-        >>> model.fit(y, X)
+        >>> model.fit(X, y)
         """
         # check number of samples
         if len(y) < 2 or len(X) < 2:
@@ -357,7 +357,7 @@ class LinearModel:
         >>> X = data[["Feature1", "Feature2"]]
         >>> y = data["Target"]
         >>> model = LinearModel()
-        >>> model.fit(y, X)
+        >>> model.fit(X, y)
         >>> regression_summary = model.summary()
         """
         # Ensure the model is fitted
