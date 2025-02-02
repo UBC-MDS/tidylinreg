@@ -3,7 +3,6 @@
 [![Documentation Status](https://readthedocs.org/projects/tidylinreg/badge/?version=latest)](https://tidylinreg.readthedocs.io/en/latest/)
 [![ci-cd](https://github.com/UBC-MDS/tidylinreg/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/UBC-MDS/tidylinreg/actions/workflows/ci-cd.yml)
 [![codecov](https://codecov.io/gh/UBC-MDS/tidylinreg/branch/main/graph/badge.svg)](https://codecov.io/gh/UBC-MDS/tidylinreg)
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 This package provides tools for linear regression in Python,
 with a similar style to the `lm` and `summary` functions in R.
