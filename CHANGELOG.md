@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v1.1.3 (2025-02-02)
+
+### Bug Fixes
+
+- Added explicit type hints to function parameters
+  ([`b003228`](https://github.com/UBC-MDS/tidylinreg/commit/b0032285b5a78cbf226505cfafc0852aae19236c))
+
+### Documentation
+
+- Corrected error in docstrings
+  ([`e444a0c`](https://github.com/UBC-MDS/tidylinreg/commit/e444a0c2d6738ced55cf2d19b8c0ac3aa88617ef))
+
+
 ## v1.1.2 (2025-01-29)
 
 ### Bug Fixes
