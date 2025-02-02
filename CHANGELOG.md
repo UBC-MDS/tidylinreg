@@ -1,6 +1,18 @@
 # CHANGELOG
 
 
+## v1.1.4 (2025-02-02)
+
+### Bug Fixes
+
+- Feedback addressed by Nicholas Varabioff - add docstrings to test functions to make them more
+  consistent.
+  ([`ffd8510`](https://github.com/UBC-MDS/tidylinreg/commit/ffd8510caf684932db3c533218a72e53019fee52))
+
+- Feedback addressed by Nicholas Varabioff - add python package version badge.
+  ([`dd74a24`](https://github.com/UBC-MDS/tidylinreg/commit/dd74a24f0decaebfd601a28179368e272f1f187e))
+
+
 ## v1.1.3 (2025-02-02)
 
 ### Bug Fixes
