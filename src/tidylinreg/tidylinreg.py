@@ -93,11 +93,11 @@ class LinearModel:
         if X.isna().any().any() and y.isna().any():
             raise ValueError('Missing entries in X and y')
         
-        # check for missing entries in X
+        # check for missing entries in y
         if y.isna().any():
             raise ValueError('Missing entries in y')
         
-        # check for missing entries in Xgi 
+        # check for missing entries in X
         if X.isna().any().any():
             raise ValueError('Missing entries in X')
         
