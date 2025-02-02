@@ -89,9 +89,17 @@ class LinearModel:
         if (X.dtypes == object).any() or (y.dtype == object):
             raise TypeError('Non-numeric entries in X or y')
         
-        # check for missing entries
-        if X.isna().any().any() or y.isna().any():
-            raise ValueError('Missing entries in X or y')
+        # check for missing entries in X AND y
+        if X.isna().any().any() and y.isna().any():
+            raise ValueError('Missing entries in X and y')
+        
+        # check for missing entries in y
+        if y.isna().any():
+            raise ValueError('Missing entries in y')
+        
+        # check for missing entries in X
+        if X.isna().any().any():
+            raise ValueError('Missing entries in X')
         
         # check shape of X and y matches
         if len(y.shape) != 1 or len(X) != y.size:

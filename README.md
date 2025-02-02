@@ -69,6 +69,9 @@ Once `tidylinreg` is installed, you can import the `LinearModel` object to begin
     my_linear_model.fit(X_train,y_train)
     ```
 
+    **NOTE:** An intercept term is automatically included in the linear model when `fit` is called.
+    No need to pad your data with a column of ones! `tidylinreg` does this for you.
+
 2. **Summary Statistics**
 
     Once the regression parameters are estimated, we can summarize their errors and significance using the

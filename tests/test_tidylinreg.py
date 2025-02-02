@@ -135,13 +135,15 @@ def test_fit_params(linear_model,X,y,expected_params):
      (X_mlr,y_categorical,TypeError),                 # categorical y
      (X_collinear,y_mlr_perfect,ValueError),          # collinear X
      (X_has_nan,y_mlr_perfect,ValueError),            # missing entries in X
-     (X_mlr,y_has_nan,ValueError),                     # missing entries in y
+     (X_mlr,y_has_nan,ValueError),                    # missing entries in y
+     (X_has_nan,y_has_nan,ValueError),                # missing entries in X and y
      (X_mlr,y_mlr_wrong_size,ValueError),             # mismatching sizes of X and y
      (X_mlr_one_sample,y_mlr_perfect,ValueError),     # X only has one sample
      (X_slr_one_sample,y_perfect_line,ValueError),    # X has one sample and one feature
      (X_mlr,y_one_sample,ValueError),                 # y only has one sample
      (X_mlr,y_empty,ValueError),                      # y has no samples
      (X_slr_empty,y_perfect_line,ValueError),         # X has no samples
+     (X_slr_empty,y_empty,ValueError)                 # X and y have no samples
      ]
 )
 def test_fit_throw_error(linear_model,X,y,expected_error):
