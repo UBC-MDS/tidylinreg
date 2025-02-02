@@ -1,6 +1,28 @@
 # CHANGELOG
 
 
+## v1.1.5 (2025-02-02)
+
+### Bug Fixes
+
+- Add tests of missingness to increase branch coverage
+  ([`a33d690`](https://github.com/UBC-MDS/tidylinreg/commit/a33d69070a3e2618ec7ffdc877f845de87e4b4ec))
+
+- Address feedback to include more precise error messages for missing entries
+  ([`b7c8502`](https://github.com/UBC-MDS/tidylinreg/commit/b7c85026289f50b5ac8e23bac45574d361709520))
+
+- Further improve code coverage
+  ([`cb5b567`](https://github.com/UBC-MDS/tidylinreg/commit/cb5b56755c50a71781a0a81822782d5a2db778e2))
+
+### Documentation
+
+- Address feedback to add interpretation of negative coefficient
+  ([`c7ed459`](https://github.com/UBC-MDS/tidylinreg/commit/c7ed45907c39c88e1fff4b0579c25f8343096904))
+
+- Address feedback to add repostatus badge and note inclusion of intercept
+  ([`eb37d3c`](https://github.com/UBC-MDS/tidylinreg/commit/eb37d3cad9465d8e0d2acf81f6641cf8959fabfd))
+
+
 ## v1.1.4 (2025-02-02)
 
 ### Bug Fixes
