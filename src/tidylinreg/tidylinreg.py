@@ -38,7 +38,7 @@ class LinearModel:
         self.pvalues = None
   
           
-    def fit(self,X,y):
+    def fit(self, X: pd.DataFrame, y: pd.Series):
         """
         Fits the linear model to the provided data.
 
@@ -120,7 +120,7 @@ class LinearModel:
         self.in_sample_predictions = self.predict(X)
         
 
-    def predict(self,X):
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
         """
         Predicts the response values from a given matrix. 
 
@@ -128,12 +128,12 @@ class LinearModel:
 
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
+        X : pd.DataFrame of shape (n_samples, n_features)
             The input features for prediction.
 
         Returns
         -------
-        array-like of shape (n_samples,)
+        np.ndarray of shape (n_samples,)
             The predicted target values.      
 
         Raises
@@ -218,7 +218,7 @@ class LinearModel:
 
         return
 
-    def get_ci(self, alpha=0.05):
+    def get_ci(self, alpha: float=0.05):
         """
         Get the confidence interval of the parameter estimates.
 
@@ -306,7 +306,7 @@ class LinearModel:
         self.pvalues = [2 * (1-stats.t.cdf(np.abs(t), self.df)) for t in self.test_statistic]
         return self.pvalues
 
-    def summary(self, ci=False, alpha=0.05) -> pd.DataFrame:
+    def summary(self, ci : bool=False, alpha : float=0.05) -> pd.DataFrame:
         """
         Summarizes the fit of the linear regression model.
 
