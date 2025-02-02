@@ -20,7 +20,7 @@ $ pip install tidylinreg
 
 The `tidylinreg` package fits a linear model to a dataset, and can be used to carry out regression. 
 `tidylinreg` computes and returns a list of summary statistics of the fitted linear model, including standard error, confidence intervals, and p-values.
-These summary statistics are ouput as a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html). This is advantageous as it allows for fast and convenient manipulation of large regression models,
+These summary statistics are output as a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html). This is advantageous as it allows for fast and convenient manipulation of large regression models,
 where, for example, insignificant parameters can easily be filtered out!
 
 ## Functions
@@ -32,10 +32,10 @@ where, for example, insignificant parameters can easily be filtered out!
     the object must be fitted to the data before anything else!
     - Please be advised that at the current state of development, `fit` only accepts continuous regressors. If your data is categorical,
     first transforming into dummy variables with encoding techniques, such as [One-Hot Encoding](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)
-    - Watch out for collinearity! `tidlinreg` will let you know if there is any linear dependence in your data
+    - Watch out for collinearity! `tidylinreg` will let you know if there is any linear dependence in your data
     before fitting.
     provided by Scikit-Learn.
-    - For convenience, the intercept is automatically included into the regression model. No need to modify your data to accomodate this!
+    - For convenience, the intercept is automatically included into the regression model. No need to modify your data to accommodate this!
 - `predict`:
     - Predict the response using given test regressor data. Remember to fit the model first!
 - `summary`:
@@ -84,7 +84,7 @@ Once `tidylinreg` is installed, you can import the `LinearModel` object to begin
     my_linear_model.summary(ci=True)
     ```
 
-    The default significance level is 0.05, giving 95% confidence intervals. We can change this by modifying the `alpha` arguument. For example, if we want wider 99% confidence intervals, we can set `alpha` to 0.01:
+    The default significance level is 0.05, giving 95% confidence intervals. We can change this by modifying the `alpha` argument. For example, if we want wider 99% confidence intervals, we can set `alpha` to 0.01:
 
     ```python
     my_linear_model.summary(ci=True, alpha=0.01)
