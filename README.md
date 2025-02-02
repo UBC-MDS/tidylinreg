@@ -4,6 +4,7 @@
 [![ci-cd](https://github.com/UBC-MDS/tidylinreg/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/UBC-MDS/tidylinreg/actions/workflows/ci-cd.yml)
 [![codecov](https://codecov.io/gh/UBC-MDS/tidylinreg/branch/main/graph/badge.svg)](https://codecov.io/gh/UBC-MDS/tidylinreg)
 [![Repo Status](https://img.shields.io/badge/repo%20status-Active-brightgreen)](https://github.com/UBC-MDS/tidylinreg/commits/main/)
+![PyPI](https://img.shields.io/pypi/v/tidylinreg)
 
 
 This package provides tools for linear regression in Python,
