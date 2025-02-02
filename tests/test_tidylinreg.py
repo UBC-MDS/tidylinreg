@@ -219,6 +219,9 @@ def test_predict_throw_error():
     ]
 )
 def test_get_test_statistic(params, sd, expected_t):
+    """
+    Test that the function correctly computes and returns test statistics.
+    """
     model = LinearModel()
     model.params = params
     model.std_error = sd
@@ -241,6 +244,9 @@ def test_get_test_statistic(params, sd, expected_t):
     ]
 )
 def test_get_test_statistic_error(params, sd, expected_error):
+    """
+    Test that the function throws expected error when computing test statistic with invalid parameters.
+    """
     model = LinearModel()
     model.params = params
     model.std_error = sd
@@ -269,6 +275,9 @@ def test_get_test_statistic_error(params, sd, expected_error):
     ]
 )
 def test_get_pvalues(test_statistic, n_samples, expected_p):
+    """
+    Test that the function correctly computes and returns p-values.
+    """
     model = LinearModel()
     model.test_statistic = test_statistic
     model.n_samples = n_samples
@@ -290,6 +299,9 @@ def test_get_pvalues(test_statistic, n_samples, expected_p):
     ]
 )
 def test_get_pvalues_error(test_statistic, n_samples, n_features, expected_error):
+    """
+    Test that the function throws expected error when computing p-values with invalid parameters.
+    """
     model = LinearModel()
     model.test_statistic = test_statistic
     model.n_samples = n_samples
